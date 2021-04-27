@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/mokkisovellus.iml" filepath="$PROJECT_DIR$/mokkisovellus.iml" />
+      <module fileurl="file://$PROJECT_DIR$/mokkienhallinta.iml" filepath="$PROJECT_DIR$/mokkienhallinta.iml" />
     </modules>
   </component>
 </project>
