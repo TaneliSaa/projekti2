@@ -21,6 +21,8 @@ public class paaNayttoController {
         this.stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         this.scene = new Scene(this.root);
         this.stage.setScene(this.scene);
+        this.stage.getScene().getWindow().centerOnScreen();
+        // this.stage.setMaximized(true);
         this.stage.show();
     }
 
