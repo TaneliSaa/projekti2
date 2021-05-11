@@ -10,14 +10,15 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import sample.connectivity.connectionClass;
 
@@ -61,7 +62,10 @@ public class asiakkaidenTietojenHallintaController {
     private TextField lahiosoiteField;
 
     @FXML
-    private TextField asiakasIDField;
+    private Label asiakasIDLabel;
+
+    @FXML
+    private TextField hakuTextField;
 
     //Asiakas olion tietojen listaaminen
     ObservableList<asiakas> oblist = FXCollections.observableArrayList();
@@ -130,7 +134,7 @@ public class asiakkaidenTietojenHallintaController {
             PreparedStatement pst;
 
             //Tietojen näyttäminen textfieldeissä
-            String rivi1 = asiakasIDField.getText();
+            String rivi1 = asiakasIDLabel.getText();
             String rivi2 = postinumeroField.getText();
             String rivi3 = etunimiField.getText();
             String rivi4 = sukunimiField.getText();
@@ -170,15 +174,110 @@ public class asiakkaidenTietojenHallintaController {
 
             //Suoritetaan sql komento DELETE
             pst = connectDB.prepareStatement(query);
-            pst.setString(1,asiakasIDField.getText());
+            pst.setString(1,asiakasIDLabel.getText());
             pst.execute();
 
             //Kutsutaan metodia, jolla päivitetään tiedot automaattisesti
             paivitaTiedot();
 
-
         } catch (Exception e) {
         }
+    }
+
+    //Ponnahdus ikkuna, mikä tulee kun painetaan poista nappia
+    public void poistaAsiakasPonnahdusIkkuna() {
+        Stage window = new Stage();
+
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.setTitle("Varoitus!");
+        window.setMinWidth(250);
+        window.setMinHeight(250);
+
+        Label label = new Label();
+        label.setText("Haluatko varmasti poistaa tiedot?");
+        Button peruutaButton = new Button("Peruuta");
+        Button hyvaksyButton = new Button("Hyväksy");
+        peruutaButton.setOnAction(e -> {
+            window.close();
+        });
+
+        hyvaksyButton.setOnAction(e->{
+            poistaAsiakas();
+            resetti();
+            window.close();
+        });
+
+        VBox layout = new VBox(10);
+        layout.getChildren().addAll(label,peruutaButton,hyvaksyButton);
+        layout.setAlignment(Pos.CENTER);
+
+        Scene scene = new Scene(layout);
+        window.setScene(scene);
+        window.showAndWait();
+    }
+
+    //Ponnahdusikkuna, mikä tulee kun painetaan lisää nappia
+    public void lisaaAsiakasPonnahdusIkkuna() {
+        Stage window = new Stage();
+
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.setTitle("Varoitus!");
+        window.setMinWidth(250);
+        window.setMinHeight(250);
+
+        Label label = new Label();
+        label.setText("Haluatko varmasti lisätä tiedot?");
+        Button peruutaButton = new Button("Peruuta");
+        Button hyvaksyButton = new Button("Hyväksy");
+        peruutaButton.setOnAction(e -> {
+            window.close();
+        });
+
+        hyvaksyButton.setOnAction(e->{
+            addUsers();
+            resetti();
+            window.close();
+        });
+
+        VBox layout = new VBox(10);
+        layout.getChildren().addAll(label,peruutaButton,hyvaksyButton);
+        layout.setAlignment(Pos.CENTER);
+
+        Scene scene = new Scene(layout);
+        window.setScene(scene);
+        window.showAndWait();
+    }
+
+    //Ponnahdusikkuna, mikä tulee kun painetaan muokkaa nappia
+    public void muokkaaAsiakastaPonnahdusIkkuna() {
+        Stage window = new Stage();
+
+        window.initModality(Modality.APPLICATION_MODAL);
+        window.setTitle("Varoitus!");
+        window.setMinWidth(250);
+        window.setMinHeight(250);
+
+        Label label = new Label();
+        label.setText("Haluatko varmasti päivittää muokatut tiedot?");
+        Button peruutaButton = new Button("Peruuta");
+        Button hyvaksyButton = new Button("Hyväksy");
+        peruutaButton.setOnAction(e -> {
+            window.close();
+        });
+
+        hyvaksyButton.setOnAction(e->{
+            paivitaAsiakas();
+            resetti();
+            window.close();
+        });
+
+        VBox layout = new VBox(10);
+        layout.getChildren().addAll(label,peruutaButton,hyvaksyButton);
+        layout.setAlignment(Pos.CENTER);
+
+        Scene scene = new Scene(layout);
+        window.setScene(scene);
+        window.showAndWait();
     }
 
     //Metodi, jolla näkee taulkon tiedot textfieldeissä
@@ -192,7 +291,7 @@ public class asiakkaidenTietojenHallintaController {
                 asiakas as = tableView.getItems().get(tableView.getSelectionModel().getSelectedIndex());
 
                 //Näytetään taulukon tiedot omissa textfieldeissä
-                asiakasIDField.setText(as.getAsiakas_id().toString());
+                asiakasIDLabel.setText(as.getAsiakas_id().toString());
                 postinumeroField.setText(as.getPostinro().toString());
                 etunimiField.setText(as.getEtunimi());
                 sukunimiField.setText(as.getSukunimi());
@@ -205,7 +304,6 @@ public class asiakkaidenTietojenHallintaController {
 
     //Metodi, jolla haetaan sql tietokannasta taulukon tiedot
     public void initialize() {
-
         try {
             //Sql yhteyden määrittäminen
             connectionClass connectNow = new connectionClass();
@@ -237,6 +335,60 @@ public class asiakkaidenTietojenHallintaController {
 
         //Kutsutaan metodia, jolla päivitetään tiedot automaattisesti
         naytaTiedot();
+
+    }
+
+    //Metodi, jolla pystytään hakemaan asiakasta hakukenttään annetulla inffolla
+    public void haku() {
+
+        //Tyhjennetään lista
+        oblist.clear();
+
+        try {
+
+            //Sql yhteyden määrittäminen
+            connectionClass connectNow = new connectionClass();
+            Connection connectDB = connectNow.getConnection();
+
+            //Sql lause, jolla haetaan tietoja annetulla sanalla tai kirjaimella
+            String sana = hakuTextField.getText();
+            String query = "SELECT asiakas_id,postinro,etunimi,sukunimi,lahiosoite,email,puhelinnro FROM asiakas WHERE postinro LIKE '%"+ sana + "%' OR\n" +
+                    "etunimi LIKE '%" + sana + "%' OR sukunimi LIKE '%" + sana + "%' OR lahiosoite LIKE '%" + sana + "%' OR email LIKE '%" + sana + "%' OR\n" +
+                    "puhelinnro LIKE '%" + sana + "%'";
+
+            ResultSet rs = connectDB.createStatement().executeQuery(query);
+
+            //While loop, joka lisää kaikki löydetyt asiakkaat listaan
+            while(rs.next()) {
+                oblist.add(new asiakas(rs.getInt("asiakas_id"), rs.getInt("postinro"), rs.getString("etunimi"),
+                        rs.getString("sukunimi"), rs.getString("lahiosoite"), rs.getString("email"), rs.getString("puhelinnro")));
+            }
+
+        } catch(SQLException throwables) {
+            throwables.printStackTrace();
+        }
+
+        //Scene builderin osien tietojen settaaminen tietokannasta
+        asiakas_idColumn.setCellValueFactory(new PropertyValueFactory<asiakas,Integer>("asiakas_id"));
+        postinroColumn.setCellValueFactory(new PropertyValueFactory<asiakas,Integer>("postinro"));
+        etunimiColumn.setCellValueFactory(new PropertyValueFactory<asiakas,String>("etunimi"));
+        sukunimiColumn.setCellValueFactory(new PropertyValueFactory<asiakas,String>("sukunimi"));
+        lahiosoiteColumn.setCellValueFactory(new PropertyValueFactory<asiakas,String>("lahiosoite"));
+        emailColumn.setCellValueFactory(new PropertyValueFactory<asiakas,String>("email"));
+        puhelinnroColumn.setCellValueFactory(new PropertyValueFactory<asiakas,String>("puhelinnro"));
+
+        //Asetetaan kaikki taulun tiedot listaan
+        tableView.setItems(oblist);
+    }
+
+    public void resetti() {
+        asiakasIDLabel.setText("");
+        postinumeroField.setText("");
+        etunimiField.setText("");
+        sukunimiField.setText("");
+        lahiosoiteField.setText("");
+        sahkopostiField.setText("");
+        puhelinnumeroField.setText("");
 
     }
 
