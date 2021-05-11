@@ -371,7 +371,7 @@ public class paaNayttoController implements Initializable {
     }
 
     public void switchToLaskujenHallinta(ActionEvent event) throws IOException {
-        this.root = (Parent) FXMLLoader.load(this.getClass().getResource("resources/laskujenHallinta.fxml"));
+        this.root = (Parent) FXMLLoader.load(this.getClass().getResource("resources/laskutus.fxml"));
         this.stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         this.scene = new Scene(this.root);
         this.stage.setScene(this.scene);
