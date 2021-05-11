@@ -71,8 +71,6 @@ public class paaNayttoController implements Initializable {
         mokkienHallintaController.tekstinTasaus(mokki_nimiColumn);
         mokkienHallintaController.tekstinTasaus(mokki_varusteluColumn);
         mokkienHallintaController.tekstinTasaus(mokki_kuvausColumn);
-        // mokkiTableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
-        // mokkiTableView.getSelectionModel().setCellSelectionEnabled(true);
         datePicker.setValue(LocalDate.now());
         datePicker.setShowWeekNumbers(false);
         haeKaikki();
