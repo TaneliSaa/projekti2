@@ -4,9 +4,14 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.Optional;
 import java.util.ResourceBundle;
+import java.util.concurrent.TimeUnit;
 
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleLongProperty;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -18,6 +23,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -39,15 +45,17 @@ public class mokkienVuokrausController implements Initializable {
     @FXML
     private Label lblHallintaNotification;
     @FXML
-    TextField varausIDHaku, asiakasIDHaku;
+    TextField varausIDHaku, asiakasIDHaku, mokkiNimiHaku;
     @FXML
     Button haeMokki, haeKaikki, varausMuokkaa, varausPoista;
+    @FXML
+    ChoiceBox<String> cbAlue;
     @FXML
     TableView<Vuokraus> mokkiTiedot;
     @FXML
     TableColumn<Mokki, Integer> idColumn;
     @FXML
-    TableColumn<Mokki, String> varattupvmColumn, vahvistuspvmColumn, varauksenalkupvmColumn, varauksenloppupvmColumn, asiakasidColumn, mokkinimiColumn, alueColumn;
+    TableColumn<Mokki, String> varattupvmColumn, vahvistuspvmColumn, varauksenalkupvmColumn, varauksenloppupvmColumn, asiakasidColumn, mokkinimiColumn, alueColumn, kestoColumn;
 
     // Alustetaan taulukkoon sarakkeet
     @Override
@@ -61,7 +69,7 @@ public class mokkienVuokrausController implements Initializable {
         asiakasidColumn.setCellValueFactory(new PropertyValueFactory<>("asiakas_id"));
         mokkinimiColumn.setCellValueFactory(new PropertyValueFactory<>("mokkinimi"));
         alueColumn.setCellValueFactory(new PropertyValueFactory<>("nimi"));
-
+        kestoColumn.setCellValueFactory(new PropertyValueFactory<>("kestoaika"));
 
         mokkiTiedot.setRowFactory(tv -> new TableRow<Vuokraus>() {
             @Override
@@ -95,6 +103,13 @@ public class mokkienVuokrausController implements Initializable {
             text.textProperty().bind(cell.itemProperty());
             return cell;
         });
+    }
+    @FXML
+    public void pudotusValikko(MouseEvent event) {
+
+        ObservableList<String> toimintaAlueet = haeToimintaAlueet();
+        cbAlue.setItems(toimintaAlueet);
+        cbAlue.setValue("Valitse toiminta-alue");
     }
 
     @FXML
@@ -147,6 +162,7 @@ public class mokkienVuokrausController implements Initializable {
             PreparedStatement preparedStmt = connectDB.prepareStatement(SQL);
             ResultSet queryResult = preparedStmt.executeQuery(SQL);
             System.out.println(queryResult);
+
             while (queryResult.next()) {
                 String mokkinimi = queryResult.getString("m.mokkinimi");
                 String toimintaalue = queryResult.getString("ta.nimi");
@@ -157,8 +173,12 @@ public class mokkienVuokrausController implements Initializable {
                 String varattuloppupvm = queryResult.getDate("v.varattu_loppupvm").toString();
                 int asiakasid = queryResult.getInt("v.asiakas_id");
                 boolean vahvistettu = queryResult.getBoolean("v.vahvistettu");
+                long kesto = Math.abs(queryResult.getDate("v.varattu_loppupvm").getTime() - queryResult.getDate("v.varattu_alkupvm").getTime());
+                long kestoaika = (TimeUnit.DAYS.convert(kesto, TimeUnit.MILLISECONDS));
 
-                vuokraus.add(new Vuokraus(varaus_id, varattupvm, vahvistuspvm, varattualkupvm, varattuloppupvm, asiakasid, mokkinimi, toimintaalue, vahvistettu));
+                System.out.println(kestoaika);
+
+                vuokraus.add(new Vuokraus(varaus_id, varattupvm, vahvistuspvm, varattualkupvm, varattuloppupvm, asiakasid, mokkinimi, toimintaalue, vahvistettu, kestoaika));
 
             }
             mokkiTiedot.setItems(vuokraus);
@@ -179,6 +199,8 @@ public class mokkienVuokrausController implements Initializable {
 
         int id = -1;
         int omistaja = -1;
+        String alue = cbAlue.getValue();
+        String nimi = mokkiNimiHaku.getText();
 
         try {
             id = Integer.parseInt(varausIDHaku.getText().trim());
@@ -190,17 +212,42 @@ public class mokkienVuokrausController implements Initializable {
         } catch (NumberFormatException ignored) {
         }
 
-        String query = "SELECT v.varaus_id, v.varattu_pvm, v.vahvistus_pvm, v.varattu_alkupvm, v.varattu_loppupvm, v.asiakas_id, m.mokkinimi, ta.nimi FROM varaus v INNER JOIN mokki m INNER JOIN toimintaalue ta WHERE ";
+        String query = "SELECT v.varaus_id, v.varattu_pvm, v.vahvistus_pvm, v.varattu_alkupvm, v.varattu_loppupvm, v.asiakas_id, " +
+                "v.vahvistettu, m.mokkinimi, ta.nimi FROM varaus v INNER JOIN mokki m ON v.mokki_mokki_id = m.mokki_id INNER JOIN " +
+                "toimintaalue ta ON m.toimintaalue_id = ta.toimintaalue_id WHERE ";
 
         if (id > 0) {
-            query += "varaus_id = " + id;
+            query += "v.varaus_id = " + id;
             if (omistaja > 0) {
-                query += " AND asiakas_id = " + omistaja;
+                query += " AND v.asiakas_id = " + omistaja;
             }
-        } else if (omistaja > 0) {
-            query += "asiakas_id = " + omistaja;
+            if (!alue.equals("Valitse toiminta-alue")) {
+                query += " AND ta.nimi = '" + alue + "'";
+            }
+            if (!nimi.equals("")){
+                query += " AND m.mokkinimi = '" + nimi + "'";
+            }
         }
-        if (id > 0 || omistaja > 0) {
+        else if (omistaja > 0) {
+            query += "v.asiakas_id = " + omistaja;
+            if (!alue.equals("Valitse toiminta-alue")) {
+                query += " AND ta.nimi = '" + alue + "'";
+            }
+            if (!nimi.equals("")){
+                query += " AND m.mokkinimi = '" + nimi + "'";
+            }
+        }
+        else if (!alue.equals("Valitse toiminta-alue")) {
+            query += "ta.nimi = '" + alue + "'";
+            if (!nimi.equals("")){
+                query += " AND m.mokkinimi = '" + nimi + "'";
+            }
+        }
+        else if (!nimi.equals("")){
+            query += "m.mokkinimi = '" + nimi + "'";
+        }
+
+        if (id > 0 || omistaja > 0 || !alue.equals("Valitse toiminta-alue") || !nimi.equals("")) {
             mokkiHaku(query);
         } else {
             System.out.println("Haku epäonnistui");
@@ -246,7 +293,7 @@ public class mokkienVuokrausController implements Initializable {
             vuokrausDialogController controller = fxmlLoader.getController();
             controller.setVuokrausController(this);
             controller.setVuokrausObservableList(vuokraus);
-            Scene scene = new Scene(parent, 700, 415);
+            Scene scene = new Scene(parent, 700, 230);
             Stage stage = new Stage();
             stage.setTitle(otsikko);
             stage.initModality(Modality.APPLICATION_MODAL);
