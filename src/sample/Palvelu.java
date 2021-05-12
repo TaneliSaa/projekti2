@@ -16,8 +16,8 @@ public class Palvelu {
 
     private String nimi;
     private int tyyppi;
-    private Double hinta;
-    private Double alv;
+    private double hinta;
+    private double alv;
     private String kuvaus;
     private int toimintaalue_id;
     private int palvelu_id;
@@ -26,9 +26,7 @@ public class Palvelu {
         return palvelu_id;
     }
 
-    public void setPalvelu_id(int palvelu_id) {
-        this.palvelu_id = palvelu_id;
-    }
+
 
     public Palvelu() {
     }
@@ -41,55 +39,6 @@ public class Palvelu {
         this.toimintaalue_id = toimintaalue_id;
     }
 
-    public String getNimi() {
-        return nimi;
-    }
-
-    public void setNimi(String nimi) {
-        this.nimi = nimi;
-    }
-
-    public int getTyyppi() {
-        return tyyppi;
-    }
-
-    public void setTyyppi(int tyyppi) {
-        this.tyyppi = tyyppi;
-    }
-
-    public Double getHinta() {
-        return hinta;
-    }
-
-    public void setHinta(Double hinta) {
-        this.hinta = hinta;
-    }
-
-    public Double getAlv() {
-        return alv;
-    }
-
-    public void setAlv(Double alv) {
-        this.alv = alv;
-    }
-
-    public int getToimintaalue_id() {
-        return toimintaalue_id;
-    }
-
-    public void setToimintaalue_id(int toimintaalue_id) {
-        this.toimintaalue_id = toimintaalue_id;
-    }
-
-    public String getKuvaus() {
-        return kuvaus;
-    }
-
-    public void setKuvaus(String kuvaus) {
-        this.kuvaus = kuvaus;
-    }
-
-
     /**
      * Palauttaa listan kaikista tietokannassa olevista Palvelu-olioista.
      *
@@ -100,7 +49,7 @@ public class Palvelu {
         connectionClass connectNow = new connectionClass();
         Connection connectDB = connectNow.getConnection();
 
-        String query = "SELECT * FROM vn.palvelu";
+        String query = "SELECT * FROM palvelu";
 
         PreparedStatement lause = connectDB.prepareStatement(query);
 
@@ -146,10 +95,83 @@ public class Palvelu {
         try {
             return listaa();
         } catch (SQLException e) {
+
             e.printStackTrace();
+
             return null;
         }
     }
+
+    public void poistaPalvelu(Integer id) throws SQLException{
+        connectionClass connectNow = new connectionClass();
+        Connection connectDB = connectNow.getConnection();
+
+        String query = "DELETE FROM palvelu WHERE palvelu_id =?";
+
+        PreparedStatement lause = connectDB.prepareStatement(query);
+        lause.setInt(1, id);
+
+        lause.executeUpdate();
+        lause.close();
+
+    }
+
+
+    public void setPalvelu_id(int palvelu_id) {
+        this.palvelu_id = palvelu_id;
+    }
+
+
+
+    public String getNimi() {
+        return nimi;
+    }
+
+    public void setNimi(String nimi) {
+        this.nimi = nimi;
+    }
+
+    public int getTyyppi() {
+        return tyyppi;
+    }
+
+    public void setTyyppi(int tyyppi) {
+        this.tyyppi = tyyppi;
+    }
+
+    public double getHinta() {
+        return hinta;
+    }
+
+    public void setHinta(double hinta) {
+        this.hinta = hinta;
+    }
+
+    public double getAlv() {
+        return alv;
+    }
+
+    public void setAlv(double alv) {
+        this.alv = alv;
+    }
+
+    public int getToimintaalue_id() {
+        return toimintaalue_id;
+    }
+
+    public void setToimintaalue_id(int toimintaalue_id) {
+        this.toimintaalue_id = toimintaalue_id;
+    }
+
+    public String getKuvaus() {
+        return kuvaus;
+    }
+
+    public void setKuvaus(String kuvaus) {
+        this.kuvaus = kuvaus;
+    }
+
+
 }
 
 
