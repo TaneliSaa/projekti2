@@ -2,6 +2,7 @@ package sample;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public class Vuokraus {
@@ -16,7 +17,22 @@ public class Vuokraus {
     private SimpleStringProperty nimi;
     private SimpleBooleanProperty vahvistettu;
 
-    public Vuokraus(int varaus_id, String varattu_pvm, String vahvistus_pvm, String varattu_alkupvm, String varattu_loppupvm, int asiakas_id, String mokkinimi, String nimi, boolean vahvistettu) {
+
+    public long getKestoaika() {
+        return kestoaika.get();
+    }
+
+    public SimpleLongProperty kestoaikaProperty() {
+        return kestoaika;
+    }
+
+    public void setKestoaika(SimpleLongProperty kestoaika) {
+        this.kestoaika = kestoaika;
+    }
+
+    private SimpleLongProperty kestoaika;
+
+    public Vuokraus(int varaus_id, String varattu_pvm, String vahvistus_pvm, String varattu_alkupvm, String varattu_loppupvm, int asiakas_id, String mokkinimi, String nimi, boolean vahvistettu, long kestoaika) {
         this.setVaraus_id(new SimpleIntegerProperty(varaus_id));
         this.setVarattu_pvm(new SimpleStringProperty(varattu_pvm));
         this.setVahvistus_pvm(new SimpleStringProperty(vahvistus_pvm));
@@ -26,6 +42,7 @@ public class Vuokraus {
         this.setMokkinimi(new SimpleStringProperty(mokkinimi));
         this.setNimi(new SimpleStringProperty(nimi));
         this.setVahvistettu(new SimpleBooleanProperty(vahvistettu));
+        this.setKestoaika(new SimpleLongProperty(kestoaika));
     }
 
     public int getVaraus_id() {
