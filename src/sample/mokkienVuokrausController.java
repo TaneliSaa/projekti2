@@ -3,6 +3,7 @@ package sample;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
@@ -24,7 +25,8 @@ import sample.connectivity.connectionClass;
 
 public class mokkienVuokrausController implements Initializable {
 
-    public mokkienVuokrausController() {}
+    public mokkienVuokrausController() {
+    }
 
     // Alustetaan connectClass-luokan olio, jolla yhdistetään sovellus tietokantaan.
     private final connectionClass connectNow = new connectionClass();
@@ -46,6 +48,7 @@ public class mokkienVuokrausController implements Initializable {
     TableColumn<Mokki, Integer> idColumn;
     @FXML
     TableColumn<Mokki, String> varattupvmColumn, vahvistuspvmColumn, varauksenalkupvmColumn, varauksenloppupvmColumn, asiakasidColumn, mokkinimiColumn, alueColumn;
+
     // Alustetaan taulukkoon sarakkeet
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -58,6 +61,26 @@ public class mokkienVuokrausController implements Initializable {
         asiakasidColumn.setCellValueFactory(new PropertyValueFactory<>("asiakas_id"));
         mokkinimiColumn.setCellValueFactory(new PropertyValueFactory<>("mokkinimi"));
         alueColumn.setCellValueFactory(new PropertyValueFactory<>("nimi"));
+
+
+        mokkiTiedot.setRowFactory(tv -> new TableRow<Vuokraus>() {
+            @Override
+            public void updateItem(Vuokraus item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null) {
+                    setStyle("");
+                } else if (item.getVahvistus()) {
+                    setStyle("-fx-background-color: LimeGreen;");
+                } else if (!item.getVahvistus()) {
+                    setStyle("-fx-background-color: yellow;");
+                    if (LocalDate.now().compareTo(LocalDate.parse(item.getVahvistus_pvm())) > 0) {
+                        setStyle("-fx-background-color: red;");
+                    }
+                } else {
+                    setStyle("");
+                }
+            }
+        });
 
         haeKaikki("alueet");
     }
@@ -80,7 +103,7 @@ public class mokkienVuokrausController implements Initializable {
         ObservableList<String> alueet = haeToimintaAlueet();
 
         String query = "SELECT v.varaus_id, v.varattu_pvm, v.vahvistus_pvm, v.varattu_alkupvm, " +
-                "v.varattu_loppupvm, v.asiakas_id, m.mokkinimi, ta.nimi " +
+                "v.varattu_loppupvm, v.asiakas_id, v.vahvistettu, m.mokkinimi, ta.nimi " +
                 "FROM varaus v INNER JOIN mokki m ON v.mokki_mokki_id = m.mokki_id INNER JOIN toimintaalue ta ON m.toimintaalue_id = ta.toimintaalue_id";
 
         switch (haettava) {
@@ -133,8 +156,9 @@ public class mokkienVuokrausController implements Initializable {
                 String varattualkupvm = queryResult.getDate("v.varattu_alkupvm").toString();
                 String varattuloppupvm = queryResult.getDate("v.varattu_loppupvm").toString();
                 int asiakasid = queryResult.getInt("v.asiakas_id");
+                boolean vahvistettu = queryResult.getBoolean("v.vahvistettu");
 
-                vuokraus.add(new Vuokraus(varaus_id, varattupvm, vahvistuspvm, varattualkupvm, varattuloppupvm, asiakasid, mokkinimi, toimintaalue));
+                vuokraus.add(new Vuokraus(varaus_id, varattupvm, vahvistuspvm, varattualkupvm, varattuloppupvm, asiakasid, mokkinimi, toimintaalue, vahvistettu));
 
             }
             mokkiTiedot.setItems(vuokraus);
@@ -171,7 +195,8 @@ public class mokkienVuokrausController implements Initializable {
         if (id > 0) {
             query += "varaus_id = " + id;
             if (omistaja > 0) {
-                query += " AND asiakas_id = " + omistaja; }
+                query += " AND asiakas_id = " + omistaja;
+            }
         } else if (omistaja > 0) {
             query += "asiakas_id = " + omistaja;
         }
@@ -181,7 +206,6 @@ public class mokkienVuokrausController implements Initializable {
             System.out.println("Haku epäonnistui");
         }
     }
-
 
 
     /*
@@ -254,10 +278,10 @@ public class mokkienVuokrausController implements Initializable {
                     PreparedStatement preparedStmt = connectDB.prepareStatement(delQuery);
                     preparedStmt.execute();
 
-                        System.out.println("Mökki (Id: " + id + ") on poistettu tietokannasta!");
-                        // Haetaan lopuksi kaikki mökit tauluun
-                        // TODO hae vain saman alueen mökit?
-                        haeKaikki("mokit");
+                    System.out.println("Mökki (Id: " + id + ") on poistettu tietokannasta!");
+                    // Haetaan lopuksi kaikki mökit tauluun
+                    // TODO hae vain saman alueen mökit?
+                    haeKaikki("mokit");
 
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -268,13 +292,42 @@ public class mokkienVuokrausController implements Initializable {
         }
     }
 
+    @FXML
+    public void mokinVahvistus() {
+
+        if (mokkiTiedot.getSelectionModel().getSelectedItem() != null) {
+            Vuokraus vuokraus = mokkiTiedot.getSelectionModel().getSelectedItem();
+
+            boolean vahvistaVaraus = vuokraus.getVahvistus();
+
+
+            if (!vahvistaVaraus) {
+                String updQuery = "UPDATE varaus SET vahvistettu = true WHERE varaus_id = " + vuokraus.getVaraus_id();
+
+                try {
+                    PreparedStatement preparedStmt = connectDB.prepareStatement(updQuery);
+
+                    int rowsUpdated = preparedStmt.executeUpdate();
+                    if (rowsUpdated > 0) {
+                        // lblHallintaNotification.setText("Varaus vahvistettiin onnistuneesti!");
+                        System.out.println("Varaus vahvistettiin onnistuneesti!");
+                        haeKaikki("mokit");
+                    }
+                    preparedStmt.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     private Stage stage;
     private Scene scene;
     private Parent root;
 
     public void switchToPaaNaytto(ActionEvent event) throws IOException {
-        this.root = (Parent)FXMLLoader.load(this.getClass().getResource("resources/paaNaytto.fxml"));
-        this.stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        this.root = (Parent) FXMLLoader.load(this.getClass().getResource("resources/paaNaytto.fxml"));
+        this.stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         this.scene = new Scene(this.root);
         this.stage.setScene(this.scene);
         this.stage.show();

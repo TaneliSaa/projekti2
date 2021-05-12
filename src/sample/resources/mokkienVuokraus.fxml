@@ -30,7 +30,8 @@
         <Button fx:id="haeMokki" layoutX="42.0" layoutY="158.0" mnemonicParsing="false" onAction="#haeEhdoilla" text="HAE MÖKKEJÄ" />
         <Button fx:id="haeKaikki" layoutX="42.0" layoutY="220.0" mnemonicParsing="false" onAction="#haeKaikkiButtonOnAction" prefHeight="25.0" prefWidth="94.0" text="HAE KAIKKI" />
         <Label layoutX="1074.0" layoutY="40.0" text="Vuokrausten hallinta" />
-      <Button fx:id="varausMuokkaa" layoutX="1074.0" layoutY="76.0" mnemonicParsing="false" onAction="#mokinMuokkaus" prefHeight="25.0" prefWidth="94.0" text="MUOKKAA" />
-      <Button fx:id="varausPoista" layoutX="1074.0" layoutY="116.0" mnemonicParsing="false" onAction="#mokinPoisto" prefHeight="25.0" prefWidth="94.0" text="POISTA" />
+      <Button fx:id="varausMuokkaa" layoutX="1074.0" layoutY="108.0" mnemonicParsing="false" onAction="#mokinMuokkaus" prefHeight="25.0" prefWidth="94.0" text="MUOKKAA" />
+      <Button fx:id="varausPoista" layoutX="1074.0" layoutY="146.0" mnemonicParsing="false" onAction="#mokinPoisto" prefHeight="25.0" prefWidth="94.0" text="POISTA" />
+      <Button fx:id="vahvista" layoutX="1074.0" layoutY="68.0" mnemonicParsing="false" onAction="#mokinVahvistus" prefHeight="25.0" prefWidth="94.0" text="VAHVISTA" />
     </children>
 </AnchorPane>

@@ -3,7 +3,8 @@ package sample;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
-
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -16,12 +17,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.*;
-
 import javafx.event.ActionEvent;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -75,6 +74,7 @@ public class mokkienHallintaController implements Initializable {
         tekstinTasaus(mokki_osoiteColumn);
         tekstinTasaus(mokki_varusteluColumn);
         tekstinTasaus(mokki_kuvausColumn);
+
         // Haetaan toiminta-alueet listalle näytön avautuessa.
         haeKaikki("alueet");
     }

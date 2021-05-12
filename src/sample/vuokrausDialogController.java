@@ -13,8 +13,6 @@ import java.time.LocalDate;
 
 public class vuokrausDialogController {
 
-
-
     @FXML
     private ChoiceBox<String> cbToimintaalue;
     @FXML

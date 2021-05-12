@@ -1,5 +1,6 @@
 package sample;
 
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
@@ -13,8 +14,9 @@ public class Vuokraus {
     private SimpleIntegerProperty asiakas_id;
     private SimpleStringProperty mokkinimi;
     private SimpleStringProperty nimi;
+    private SimpleBooleanProperty vahvistettu;
 
-    public Vuokraus(int varaus_id, String varattu_pvm, String vahvistus_pvm, String varattu_alkupvm, String varattu_loppupvm, int asiakas_id,String mokkinimi, String nimi) {
+    public Vuokraus(int varaus_id, String varattu_pvm, String vahvistus_pvm, String varattu_alkupvm, String varattu_loppupvm, int asiakas_id, String mokkinimi, String nimi, boolean vahvistettu) {
         this.setVaraus_id(new SimpleIntegerProperty(varaus_id));
         this.setVarattu_pvm(new SimpleStringProperty(varattu_pvm));
         this.setVahvistus_pvm(new SimpleStringProperty(vahvistus_pvm));
@@ -23,6 +25,7 @@ public class Vuokraus {
         this.setAsiakas_id(new SimpleIntegerProperty(asiakas_id));
         this.setMokkinimi(new SimpleStringProperty(mokkinimi));
         this.setNimi(new SimpleStringProperty(nimi));
+        this.setVahvistettu(new SimpleBooleanProperty(vahvistettu));
     }
 
     public int getVaraus_id() {
@@ -119,5 +122,11 @@ public class Vuokraus {
     public void setNimi(SimpleStringProperty nimi) {
         this.nimi = nimi;
     }
+
+    public Boolean getVahvistus() {return vahvistettu.get(); }
+
+    public SimpleBooleanProperty vahvistettuProperty() { return vahvistettu; }
+
+    public void setVahvistettu(SimpleBooleanProperty vahvistettu) {this.vahvistettu = vahvistettu; }
 
 }
