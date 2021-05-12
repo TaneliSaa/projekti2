@@ -3,6 +3,8 @@ package sample;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
@@ -28,9 +30,10 @@ import javafx.stage.Stage;
 
 public class mokkienHallintaController implements Initializable {
 
- public mokkienHallintaController() {}
+    public mokkienHallintaController() {
+    }
 
-    // Alustetaan connectClass-luokan olio, jolla yhdistetään sovellus tietokantaan.
+    // Alustetaan connectionClass-luokan olio, jolla yhdistetään sovellus tietokantaan.
     private final connectionClass connectNow = new connectionClass();
     private final Connection connectDB = connectNow.getConnection();
 
@@ -71,13 +74,15 @@ public class mokkienHallintaController implements Initializable {
         tekstinTasaus(mokki_osoiteColumn);
         tekstinTasaus(mokki_varusteluColumn);
         tekstinTasaus(mokki_kuvausColumn);
+
+        // Haetaan toiminta-alueet listalle näytön avautuessa.
         haeKaikki("alueet");
     }
 
     /*
         Metodi tasaa parametrina annetun taulukon sarakkeen sisältämän tekstin.
      */
-    private void tekstinTasaus(TableColumn<Mokki, String> col) {
+    public static void tekstinTasaus(TableColumn<Mokki, String> col) {
         col.setCellFactory(tc -> {
             TableCell<Mokki, String> cell = new TableCell<>();
             Text text = new Text();
@@ -129,28 +134,31 @@ public class mokkienHallintaController implements Initializable {
             query += "m.mokki_id = " + id;
             if (!alue.equals("Valitse toiminta-alue")) {
                 query += " AND ta.nimi = '" + alue + "'";
-                if (!postinro.equals("")) {
-                    query += " AND m.postinro = " + postinro;
-                    if (omistaja > 0) {
-                        query += " AND m.omistaja_id = " + omistaja;
-                    }
-                }
             }
-        } else if (!alue.equals("Valitse toiminta-alue")) {
+            if (!postinro.equals("")) {
+                query += " AND m.postinro = " + postinro;
+            }
+            if (omistaja > 0) {
+                query += " AND m.omistaja_id = " + omistaja;
+            }
+        }
+        else if (!alue.equals("Valitse toiminta-alue")) {
             System.out.println(alue);
             query += "ta.nimi = '" + alue + "'";
             if (!postinro.equals("")) {
                 query += " AND m.postinro = " + postinro;
-                if (omistaja > 0) {
-                    query += " AND m.omistaja_id = " + omistaja;
-                }
             }
-        } else if (!postinro.equals("")) {
+            if (omistaja > 0) {
+                    query += " AND m.omistaja_id = " + omistaja;
+            }
+        }
+        else if (!postinro.equals("")) {
             query += "m.postinro = " + postinro;
             if (omistaja > 0) {
                 query += " AND m.omistaja_id = " + omistaja;
             }
-        } else if (omistaja > 0) {
+        }
+        else if (omistaja > 0) {
             query += "m.omistaja_id = " + omistaja;
         }
 
@@ -200,7 +208,7 @@ public class mokkienHallintaController implements Initializable {
     @FXML
     public void onEnterPressed(KeyEvent event) {
 
-        if(event.getCode().equals(KeyCode.ENTER)) {
+        if (event.getCode().equals(KeyCode.ENTER)) {
 
             String sana = tfSanaHaku.getText().trim();
             String query = "SELECT m.mokki_id, ta.nimi, m.postinro, m.mokkinimi, m.katuosoite, m.kuvaus, " +
@@ -325,13 +333,13 @@ public class mokkienHallintaController implements Initializable {
 
         TextInputDialog dialog = new TextInputDialog();
         dialog.getDialogPane().getButtonTypes().addAll(jatka, peruuta);
-        dialog.getDialogPane().getButtonTypes().remove(0,2);
+        dialog.getDialogPane().getButtonTypes().remove(0, 2);
         dialog.setTitle("Lisää toiminta-alue");
         dialog.setHeaderText("Lisätään uusi toiminta-alue tietokantaan.");
         dialog.setContentText("Toiminta-alueen nimi:");
 
         Optional<String> result = dialog.showAndWait();
-        if (result.isPresent()){
+        if (result.isPresent()) {
             String alue = result.get();
 
             try {
@@ -347,14 +355,14 @@ public class mokkienHallintaController implements Initializable {
 
                 if (!loytyyko) {
                     String insQuery = "INSERT INTO toimintaalue (nimi) VALUES ('" + alue + "')";
-                     PreparedStatement preparedStmt2 = connectDB.prepareStatement(insQuery);
-                        int rowsInserted = preparedStmt2.executeUpdate();
-                        if (rowsInserted > 0) {
-                            lblHallintaNotification.setText("Toiminta-alue lisättiin tietokantaan!");
-                            System.out.println("Toiminta-alue lisättiin tietokantaan!");
-                            // Haetaan lisäyksen jälkeen kaikki toiminta-alueet listalle.
-                            haeKaikki("alueet");
-                         }
+                    PreparedStatement preparedStmt2 = connectDB.prepareStatement(insQuery);
+                    int rowsInserted = preparedStmt2.executeUpdate();
+                    if (rowsInserted > 0) {
+                        lblHallintaNotification.setText("Toiminta-alue lisättiin tietokantaan!");
+                        System.out.println("Toiminta-alue lisättiin tietokantaan!");
+                        // Haetaan lisäyksen jälkeen kaikki toiminta-alueet listalle.
+                        haeKaikki("alueet");
+                    }
                     preparedStmt.close();
                 } else {
                     lblHallintaNotification.setText("Toiminta-alue löytyy jo tietokannasta!");
@@ -375,7 +383,7 @@ public class mokkienHallintaController implements Initializable {
 
         ChoiceDialog<String> dialog = new ChoiceDialog<>("Valitse toiminta-alue", valinnat);
         dialog.getDialogPane().getButtonTypes().addAll(jatka, peruuta);
-        dialog.getDialogPane().getButtonTypes().remove(0,2);
+        dialog.getDialogPane().getButtonTypes().remove(0, 2);
         dialog.setTitle("Poista toiminta-alue");
         dialog.setHeaderText("Toiminta-alue poistetaan tietokannasta");
 

@@ -7,58 +7,113 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="747.0" prefWidth="921.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.asiakkaidenTietojenHallintaController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="965.0" prefWidth="1204.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.asiakkaidenTietojenHallintaController">
     <children>
-        <Label layoutX="449.0" layoutY="14.0" text="Asiakkaiden tietojen hallinta">
+        <Label layoutX="555.0" layoutY="14.0" text="Asiakkaiden tietojen hallinta">
             <font>
                 <Font name="System Bold Italic" size="24.0" />
             </font>
         </Label>
-      <AnchorPane layoutY="1.0" prefHeight="747.0" prefWidth="268.0" style="-fx-background-color: DEB887;">
+      <AnchorPane layoutX="-7.0" prefHeight="803.0" prefWidth="305.0" style="-fx-background-color: DEB887;">
          <children>
-            <TextField fx:id="etunimiField" layoutX="97.0" layoutY="161.0" />
-            <TextField fx:id="sukunimiField" layoutX="97.0" layoutY="207.0" />
-            <TextField fx:id="postinumeroField" layoutX="97.0" layoutY="115.0" />
-            <Label layoutX="11.0" layoutY="357.0" text="Puhelinnumero" />
-            <Label layoutX="19.0" layoutY="211.0" text="Sukunimi" />
-            <Label layoutX="24.0" layoutY="165.0" text="Etunimi" />
-            <Label layoutX="11.0" layoutY="119.0" text="Postinumero" />
-            <Label layoutX="19.0" layoutY="252.0" text="Lähiosoite" />
-            <TextField fx:id="sahkopostiField" layoutX="97.0" layoutY="296.0" />
-            <Label layoutX="14.0" layoutY="300.0" text="Sähköposti" />
-            <Button layoutX="84.0" layoutY="517.0" mnemonicParsing="false" onAction="#paivitaAsiakas" prefHeight="35.0" prefWidth="100.0" text="Muokkaa">
+              <Button layoutX="20.0" layoutY="750.0" mnemonicParsing="false" onAction="#switchToPaaNaytto" prefHeight="35.0" prefWidth="100.0" text="Takaisin">
                <font>
                   <Font size="18.0" />
-               </font>
-            </Button>
-              <Button layoutX="14.0" layoutY="702.0" mnemonicParsing="false" onAction="#switchToPaaNaytto" text="Takaisin" />
-            <TextField fx:id="puhelinnumeroField" layoutX="97.0" layoutY="353.0" />
-            <Button layoutX="84.0" layoutY="585.0" mnemonicParsing="false" onAction="#poistaAsiakas" prefHeight="35.0" prefWidth="100.0" text="Poista">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Button>
-            <Button layoutX="84.0" layoutY="449.0" mnemonicParsing="false" onAction="#addUsers" prefHeight="35.0" prefWidth="100.0" text="Lisää">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Button>
-            <TextField fx:id="lahiosoiteField" layoutX="97.0" layoutY="248.0" />
-            <TextField fx:id="asiakasIDField" layoutX="97.0" layoutY="73.0" />
-            <Label layoutX="24.0" layoutY="77.0" text="Asiakas ID" />
+               </font></Button>
+            <VBox layoutX="103.0" layoutY="494.0" prefHeight="200.0" prefWidth="100.0" spacing="25.0">
+               <children>
+                  <Button mnemonicParsing="false" onAction="#lisaaAsiakasPonnahdusIkkuna" prefHeight="35.0" prefWidth="100.0" text="Lisää">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#muokkaaAsiakastaPonnahdusIkkuna" prefHeight="35.0" prefWidth="100.0" text="Muokkaa">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#poistaAsiakasPonnahdusIkkuna" prefHeight="35.0" prefWidth="100.0" text="Poista">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Button>
+               </children>
+            </VBox>
+            <VBox layoutX="14.0" layoutY="14.0" prefHeight="402.0" prefWidth="100.0" spacing="29.0">
+               <children>
+                  <Label text="Asiakas ID">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label text="Postinumero">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label text="Etunimi">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label text="Sukunimi">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label text="Lähiosoite">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label text="Sähköposti">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label text="Puhelinnumero">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <Label text="Haku">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+               </children>
+            </VBox>
+            <VBox layoutX="110.0" layoutY="14.0" prefHeight="402.0" prefWidth="149.0" spacing="25.0">
+               <children>
+                  <Label fx:id="asiakasIDLabel" text="Asiakas ID">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="postinumeroField" />
+                  <TextField fx:id="etunimiField" />
+                  <TextField fx:id="sukunimiField" />
+                  <TextField fx:id="lahiosoiteField" />
+                  <TextField fx:id="sahkopostiField" />
+                  <TextField fx:id="puhelinnumeroField" />
+                  <TextField fx:id="hakuTextField" onAction="#haku" />
+               </children>
+            </VBox>
+            <Button layoutX="131.0" layoutY="404.0" mnemonicParsing="false" onAction="#resetti" prefHeight="39.0" prefWidth="106.0" text="Reset" />
          </children>
       </AnchorPane>
-      <TableView fx:id="tableView" layoutX="298.0" layoutY="76.0" prefHeight="596.0" prefWidth="593.0">
+      <TableView fx:id="tableView" layoutX="298.0" layoutY="76.0" prefHeight="729.0" prefWidth="840.0">
         <columns>
-            <TableColumn fx:id="asiakas_idColumn" text="asiakas_id" />
-            <TableColumn fx:id="postinroColumn" text="postinnro" />
-          <TableColumn fx:id="etunimiColumn" text="etunimi" />
-          <TableColumn fx:id="sukunimiColumn" text="sukunimi" />
-            <TableColumn fx:id="lahiosoiteColumn" text="lahiosoite" />
-            <TableColumn fx:id="emailColumn" text="email" />
-            <TableColumn fx:id="puhelinnroColumn" text="puhelinnro" />
+            <TableColumn fx:id="asiakas_idColumn" prefWidth="120.0" text="asiakas_id" />
+            <TableColumn fx:id="postinroColumn" prefWidth="120.0" text="postinnro" />
+          <TableColumn fx:id="etunimiColumn" prefWidth="120.0" text="etunimi" />
+          <TableColumn fx:id="sukunimiColumn" prefWidth="120.0" text="sukunimi" />
+            <TableColumn fx:id="lahiosoiteColumn" prefWidth="120.0" text="lahiosoite" />
+            <TableColumn fx:id="emailColumn" prefWidth="120.0" text="email" />
+            <TableColumn fx:id="puhelinnroColumn" prefWidth="120.0" text="puhelinnro" />
         </columns>
       </TableView>
     </children>
