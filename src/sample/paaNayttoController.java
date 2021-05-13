@@ -7,11 +7,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.ResourceBundle;
-
+import java.util.*;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -25,14 +22,12 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import sample.connectivity.connectionClass;
 
 public class paaNayttoController implements Initializable {
-
 
     private Stage stage;
     private Scene scene;
@@ -45,9 +40,11 @@ public class paaNayttoController implements Initializable {
     @FXML
     private Label lblValittuMokki, lblHallintaNotification;
     @FXML
-    private TextField tfIdHaku, tfOmistajaHaku, tfPostiHaku, tfSanaHaku;
+    private TextField tfIdHaku, tfHenkilomaaraHaku, tfPostiHaku, tfSanaHaku;
     @FXML
     private ChoiceBox<String> taChoiceBox;
+    @FXML
+    private Slider minHinta, maxHinta;
     @FXML
     public DatePicker datePicker;
     @FXML
@@ -57,6 +54,8 @@ public class paaNayttoController implements Initializable {
     @FXML
     private TableColumn<Mokki, String> mokki_alueColumn, mokki_nimiColumn, mokki_varusteluColumn, mokki_kuvausColumn;
 
+    public paaNayttoController() {
+    }
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
@@ -76,9 +75,6 @@ public class paaNayttoController implements Initializable {
         haeKaikki();
     }
 
-    public paaNayttoController() {
-    }
-
     @FXML
     public void haeKaikki() {
 
@@ -86,103 +82,81 @@ public class paaNayttoController implements Initializable {
                 "m.henkilomaara, m.varustelu, m.vrk_hinta, m.omistaja_id " +
                 "FROM mokki m INNER JOIN toimintaalue ta ON m.toimintaalue_id=ta.toimintaalue_id";
 
-        ObservableList<Mokki> mokki = FXCollections.observableArrayList();
-
-        try {
-            PreparedStatement preparedStmt = connectDB.prepareStatement(query);
-            ResultSet queryResult = preparedStmt.executeQuery(query);
-
-            while (queryResult.next()) {
-                int id = queryResult.getInt("m.mokki_id");
-                String ta = queryResult.getString("ta.nimi");
-                String postinro = queryResult.getString("m.postinro");
-                String nimi = queryResult.getString("m.mokkinimi");
-                String osoite = queryResult.getString("m.katuosoite");
-                String kuvaus = queryResult.getString("m.kuvaus");
-                int henkilot = queryResult.getInt("m.henkilomaara");
-                String varustelu = queryResult.getString("m.varustelu");
-                int hinta = queryResult.getInt("m.vrk_hinta");
-                int omistajaid = queryResult.getInt("m.omistaja_id");
-
-                mokki.add(new Mokki(id, ta, nimi, osoite, postinro, henkilot, hinta, varustelu, kuvaus, omistajaid));
-            }
-            mokkiTableView.setItems(mokki);
-            preparedStmt.close();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        mokkiHaku(query);
+        lblHallintaNotification.setText("Kaikki mökit haettu!");
     }
 
-    public void mokinValinta(MouseEvent mouseEvent) {
+    public void mokinValinta() {
 
-        List<LocalDate> alkupaivat = new ArrayList<>();
-        List<LocalDate> loppupaivat = new ArrayList<>();
+        if (mokkiTableView.getSelectionModel().getSelectedItem() != null) {
 
-        Mokki mokki = mokkiTableView.getSelectionModel().getSelectedItem();
-        int id = mokki.getMokki_id();
+            Mokki mokki = mokkiTableView.getSelectionModel().getSelectedItem();
+            int id = mokki.getMokki_id();
+            List<LocalDate> alkupaivat = new ArrayList<>();
+            List<LocalDate> loppupaivat = new ArrayList<>();
+            Date alkupvm;
+            Date loppupvm;
+            lblValittuMokki.setText(mokki.getMokki_nimi());
 
-        lblValittuMokki.setText(mokki.getMokki_nimi());
-        Date alkupvm;
-        Date loppupvm;
+            String query = "SELECT v.varattu_alkupvm, v.varattu_loppupvm from mokki m INNER JOIN varaus v " +
+                    "ON m.mokki_id = v.mokki_mokki_id WHERE m.mokki_id = " + id;
 
-        String query = "SELECT v.varattu_alkupvm, v.varattu_loppupvm from mokki m INNER JOIN varaus v ON m.mokki_id = v.mokki_mokki_id WHERE m.mokki_id = "
-                + id;
+            try {
+                PreparedStatement preparedStmt = connectDB.prepareStatement(query);
+                ResultSet queryResult = preparedStmt.executeQuery(query);
 
-        try {
-            PreparedStatement preparedStmt = connectDB.prepareStatement(query);
-            ResultSet queryResult = preparedStmt.executeQuery(query);
+                while (queryResult.next()) {
+                    alkupvm = queryResult.getTimestamp("v.varattu_alkupvm");
+                    loppupvm = queryResult.getTimestamp("v.varattu_loppupvm");
 
-            while (queryResult.next()) {
-                alkupvm = queryResult.getTimestamp("v.varattu_alkupvm");
-                loppupvm = queryResult.getTimestamp("v.varattu_loppupvm");
+                    LocalDate localAlku = alkupvm.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    LocalDate localLoppu = loppupvm.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
-                LocalDate localAlku = alkupvm.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                LocalDate localLoppu = loppupvm.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                    alkupaivat.add(localAlku);
+                    loppupaivat.add(localLoppu);
+                }
+                preparedStmt.close();
 
-                alkupaivat.add(localAlku);
-                loppupaivat.add(localLoppu);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            preparedStmt.close();
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        Callback<DatePicker, DateCell> dayCellFactory =
-                new Callback<DatePicker, DateCell>() {
-                    @Override
-                    public DateCell call(DatePicker datePicker) {
-                        return new DateCell() {
-                            @Override
-                            public void updateItem(LocalDate item, boolean empty) {
-                                super.updateItem(item, empty);
-                                LocalDate itemAlku;
-                                LocalDate itemLoppu;
-                                LocalDate paivays = new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                                setStyle("-fx-background-color: #00FF00;");
-                                if (item.equals(paivays)) {
-                                    setStyle("-fx-background-color: #00BFFF;");
-                                }
-                                for (int i = 0; i < alkupaivat.size(); i++) {
-                                    itemAlku = alkupaivat.get(i);
-                                    itemLoppu = loppupaivat.get(i);
-                                    if (item.isAfter(itemAlku.minusDays(1)) && item.isBefore(itemLoppu.plusDays(1))) {
-                                        setDisable(true);
-                                        setStyle("-fx-background-color: #ffc0cb;");
+            Callback<DatePicker, DateCell> dayCellFactory =
+                    new Callback<>() {
+                        @Override
+                        public DateCell call(DatePicker datePicker) {
+                            return new DateCell() {
+                                @Override
+                                public void updateItem(LocalDate item, boolean empty) {
+                                    super.updateItem(item, empty);
+                                    LocalDate itemAlku;
+                                    LocalDate itemLoppu;
+                                    LocalDate paivays = new Date().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                                    setStyle("-fx-background-color: #00FF00;");
+                                    if (item.equals(paivays)) {
+                                        setStyle("-fx-background-color: #00BFFF;");
+                                    }
+                                    for (int i = 0; i < alkupaivat.size(); i++) {
+                                        itemAlku = alkupaivat.get(i);
+                                        itemLoppu = loppupaivat.get(i);
+                                        if (item.isAfter(itemAlku.minusDays(1)) && item.isBefore(itemLoppu.plusDays(1))) {
+                                            setDisable(true);
+                                            setStyle("-fx-background-color: #ffc0cb;");
+                                        }
                                     }
                                 }
-                            }
-                        };
-                    }
-                };
-        datePicker.setDayCellFactory(dayCellFactory);
-        datePicker.show();
-        datePicker.requestFocus();
+                            };
+                        }
+                    };
+            datePicker.setDayCellFactory(dayCellFactory);
+            datePicker.show();
+            datePicker.requestFocus();
+        }
     }
 
+
     @FXML
-    public void teeVaraus(ActionEvent event) throws IOException {
+    public void teeVaraus() throws IOException {
 
         if (mokkiTableView.getSelectionModel().getSelectedItem() != null) {
             Mokki mokki = mokkiTableView.getSelectionModel().getSelectedItem();
@@ -199,12 +173,11 @@ public class paaNayttoController implements Initializable {
             stage.setScene(scene);
             stage.getScene().getWindow().centerOnScreen();
             stage.showAndWait();
-
         }
     }
 
     @FXML
-    public void pudotusValikko(MouseEvent event) {
+    public void pudotusValikko() {
 
         ObservableList<String> toimintaAlueet = haeToimintaAlueet();
         taChoiceBox.setItems(toimintaAlueet);
@@ -216,7 +189,7 @@ public class paaNayttoController implements Initializable {
 
         ObservableList<String> toimintaAlueet = FXCollections.observableArrayList();
 
-        String query = "SELECT * FROM toimintaalue"; // SQL-lause kaikkien toiminta-alueiden hakemiseen.
+        String query = "SELECT * FROM toimintaalue";
 
         try {
             Statement statement = connectDB.createStatement();
@@ -237,7 +210,9 @@ public class paaNayttoController implements Initializable {
     public void haeEhdoilla() {
 
         int id = -1;
-        int omistaja = -1;
+        int henkilomaara = -1;
+        double alaraja = minHinta.getValue();
+        double ylaraja = maxHinta.getValue();
         String alue = taChoiceBox.getValue();
         String postinro = tfPostiHaku.getText().trim();
 
@@ -247,7 +222,7 @@ public class paaNayttoController implements Initializable {
         }
 
         try {
-            omistaja = Integer.parseInt(tfOmistajaHaku.getText().trim());
+            henkilomaara = Integer.parseInt(tfHenkilomaaraHaku.getText().trim());
         } catch (NumberFormatException ignored) {
         }
 
@@ -263,8 +238,11 @@ public class paaNayttoController implements Initializable {
             if (!postinro.equals("")) {
                 query += " AND m.postinro = " + postinro;
             }
-            if (omistaja > 0) {
-                query += " AND m.omistaja_id = " + omistaja;
+            if (henkilomaara > 0) {
+                query += " AND m.henkilomaara >= " + henkilomaara;
+            }
+            if (alaraja > 0 || ylaraja < 400) {
+                query += " AND m.vrk_hinta >= " + alaraja + " AND m.vrk_hinta <= " + ylaraja;
             }
         } else if (!alue.equals("Valitse toiminta-alue")) {
             System.out.println(alue);
@@ -272,19 +250,30 @@ public class paaNayttoController implements Initializable {
             if (!postinro.equals("")) {
                 query += " AND m.postinro = " + postinro;
             }
-            if (omistaja > 0) {
-                query += " AND m.omistaja_id = " + omistaja;
+            if (henkilomaara > 0) {
+                query += " AND m.henkilomaara >= " + henkilomaara;
+            }
+            if (alaraja > 0 || ylaraja < 400) {
+                query += " AND m.vrk_hinta >= " + alaraja + " AND m.vrk_hinta<= " + ylaraja;
             }
         } else if (!postinro.equals("")) {
             query += "m.postinro = " + postinro;
-            if (omistaja > 0) {
-                query += " AND m.omistaja_id = " + omistaja;
+            if (henkilomaara > 0) {
+                query += " AND m.henkilomaara >= " + henkilomaara;
             }
-        } else if (omistaja > 0) {
-            query += "m.omistaja_id = " + omistaja;
+            if (alaraja > 0 || ylaraja < 400) {
+                query += " AND m.vrk_hinta >= " + alaraja + " AND m.vrk_hinta <= " + ylaraja;
+            }
+        } else if (henkilomaara > 0) {
+            query += "m.henkilomaara >= " + henkilomaara;
+            if (alaraja > 0 || ylaraja < 400) {
+                query += " AND m.vrk_hinta >= " + alaraja + " AND m.vrk_hinta <= " + ylaraja;
+            }
+        } else if (alaraja > 0 || ylaraja < 400) {
+            query += " m.vrk_hinta >= " + alaraja + " AND m.vrk_hinta <= " + ylaraja;
         }
 
-        if (id > 0 || !alue.equals("Valitse toiminta-alue") || !postinro.equals("") || omistaja > 0) {
+        if (id > 0 || !alue.equals("Valitse toiminta-alue") || !postinro.equals("") || henkilomaara > 0 || alaraja > 0 || ylaraja < 400) {
             mokkiHaku(query);
             lblHallintaNotification.setText("Haku onnistui!");
         } else {
@@ -303,6 +292,7 @@ public class paaNayttoController implements Initializable {
                     " ON m.toimintaalue_id=ta.toimintaalue_id WHERE mokkinimi LIKE '%" + sana + "%' OR katuosoite LIKE" +
                     " '%" + sana + "%' OR varustelu LIKE '%" + sana + "%' OR kuvaus LIKE '%" + sana + "%'";
             mokkiHaku(query);
+            lblHallintaNotification.setText("Sanahaku tehty!");
         }
     }
 
@@ -337,7 +327,7 @@ public class paaNayttoController implements Initializable {
     }
 
     public void switchToMokkienHallinta(ActionEvent event) throws IOException {
-        this.root = (Parent) FXMLLoader.load(this.getClass().getResource("resources/mokkienHallinta.fxml"));
+        this.root = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("resources/mokkienHallinta.fxml")));
         this.stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         this.scene = new Scene(this.root);
         this.stage.setScene(this.scene);
@@ -347,7 +337,7 @@ public class paaNayttoController implements Initializable {
     }
 
     public void switchToMokkienVuokraus(ActionEvent event) throws IOException {
-        this.root = (Parent) FXMLLoader.load(this.getClass().getResource("resources/mokkienVuokraus.fxml"));
+        this.root = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("resources/mokkienVuokraus.fxml")));
         this.stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         this.scene = new Scene(this.root);
         this.stage.setScene(this.scene);
@@ -355,7 +345,7 @@ public class paaNayttoController implements Initializable {
     }
 
     public void switchToPalveluidenHallinta(ActionEvent event) throws IOException {
-        this.root = (Parent) FXMLLoader.load(this.getClass().getResource("resources/palveluidenHallinta.fxml"));
+        this.root = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("resources/palveluidenHallinta.fxml")));
         this.stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         this.scene = new Scene(this.root);
         this.stage.setScene(this.scene);
@@ -363,7 +353,7 @@ public class paaNayttoController implements Initializable {
     }
 
     public void switchToAsiakkaidenTietojenHallinta(ActionEvent event) throws IOException {
-        this.root = (Parent) FXMLLoader.load(this.getClass().getResource("resources/asiakkaidenTietojenHallinta.fxml"));
+        this.root = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("resources/asiakkaidenTietojenHallinta.fxml")));
         this.stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         this.scene = new Scene(this.root);
         this.stage.setScene(this.scene);
@@ -371,12 +361,23 @@ public class paaNayttoController implements Initializable {
     }
 
     public void switchToLaskujenHallinta(ActionEvent event) throws IOException {
-        this.root = (Parent) FXMLLoader.load(this.getClass().getResource("resources/laskutus.fxml"));
+        this.root = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("resources/laskutus.fxml")));
         this.stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
         this.scene = new Scene(this.root);
         this.stage.setScene(this.scene);
         this.stage.show();
     }
 
+    public void switchToRaporttienHallinta(ActionEvent event) throws IOException {
+        this.root = FXMLLoader.load(Objects.requireNonNull(this.getClass().getResource("resources/raportit.fxml")));
+        this.stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        this.scene = new Scene(this.root);
+        this.stage.setScene(this.scene);
+        this.stage.show();
+    }
 
+    @FXML
+    private void suljeSovellus() {
+        Platform.exit();
+    }
 }

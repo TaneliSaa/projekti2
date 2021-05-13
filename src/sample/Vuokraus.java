@@ -2,11 +2,13 @@ package sample;
 
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 
 public class Vuokraus {
 
     private SimpleIntegerProperty varaus_id;
+    private SimpleIntegerProperty mokki_id;
     private SimpleStringProperty varattu_pvm;
     private SimpleStringProperty vahvistus_pvm;
     private SimpleStringProperty varattu_alkupvm;
@@ -15,9 +17,16 @@ public class Vuokraus {
     private SimpleStringProperty mokkinimi;
     private SimpleStringProperty nimi;
     private SimpleBooleanProperty vahvistettu;
+    private SimpleLongProperty kestoaika;
+    private SimpleBooleanProperty laskutettu;
 
-    public Vuokraus(int varaus_id, String varattu_pvm, String vahvistus_pvm, String varattu_alkupvm, String varattu_loppupvm, int asiakas_id, String mokkinimi, String nimi, boolean vahvistettu) {
+
+
+    public Vuokraus(int varaus_id, int mokki_id, String varattu_pvm, String vahvistus_pvm, String varattu_alkupvm,
+                    String varattu_loppupvm, int asiakas_id, String mokkinimi, String nimi,
+                    boolean vahvistettu, long kestoaika, boolean laskutettu) {
         this.setVaraus_id(new SimpleIntegerProperty(varaus_id));
+        this.setMokki_id(new SimpleIntegerProperty(mokki_id));
         this.setVarattu_pvm(new SimpleStringProperty(varattu_pvm));
         this.setVahvistus_pvm(new SimpleStringProperty(vahvistus_pvm));
         this.setVarattu_alkupvm(new SimpleStringProperty(varattu_alkupvm));
@@ -26,6 +35,8 @@ public class Vuokraus {
         this.setMokkinimi(new SimpleStringProperty(mokkinimi));
         this.setNimi(new SimpleStringProperty(nimi));
         this.setVahvistettu(new SimpleBooleanProperty(vahvistettu));
+        this.setKestoaika(new SimpleLongProperty(kestoaika));
+        this.setLaskutettu(new SimpleBooleanProperty(laskutettu));
     }
 
     public int getVaraus_id() {
@@ -38,6 +49,18 @@ public class Vuokraus {
 
     public void setVaraus_id(SimpleIntegerProperty varaus_id) {
         this.varaus_id = varaus_id;
+    }
+
+    public int getMokki_id() {
+        return mokki_id.get();
+    }
+
+    public SimpleIntegerProperty mokki_idProperty() {
+        return mokki_id;
+    }
+
+    public void setMokki_id(SimpleIntegerProperty mokki_id) {
+        this.mokki_id = mokki_id;
     }
 
     public String getVarattu_pvm() {
@@ -128,5 +151,24 @@ public class Vuokraus {
     public SimpleBooleanProperty vahvistettuProperty() { return vahvistettu; }
 
     public void setVahvistettu(SimpleBooleanProperty vahvistettu) {this.vahvistettu = vahvistettu; }
+
+    public Boolean getLaskutus() {return laskutettu.get(); }
+
+    public SimpleBooleanProperty laskutettuProperty() { return laskutettu; }
+
+    public void setLaskutettu(SimpleBooleanProperty laskutettu) {this.laskutettu = laskutettu; }
+
+    public long getKestoaika() {
+        return kestoaika.get();
+    }
+
+    public SimpleLongProperty kestoaikaProperty() {
+        return kestoaika;
+    }
+
+    public void setKestoaika(SimpleLongProperty kestoaika) {
+        this.kestoaika = kestoaika;
+    }
+
 
 }

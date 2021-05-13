@@ -1,37 +1,56 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ChoiceBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="658.0" prefWidth="1207.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.mokkienVuokrausController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="755.0" prefWidth="1296.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.mokkienVuokrausController">
     <children>
-        <Button layoutX="14.0" layoutY="619.0" mnemonicParsing="false" onAction="#switchToPaaNaytto" text="Takaisin" />
-        <Label layoutX="14.0" layoutY="6.0" text="Mökkien vuokraus" />
-        <TableView fx:id="mokkiTiedot" layoutX="192.0" layoutY="23.0" prefHeight="630.0" prefWidth="875.0">
+        <Button layoutX="17.0" layoutY="709.0" mnemonicParsing="false" onAction="#switchToPaaNaytto" prefHeight="35.0" prefWidth="109.0" text="TAKAISIN" />
+        <TableView fx:id="mokkiTiedot" layoutX="195.0" layoutY="113.0" prefHeight="588.0" prefWidth="856.0">
             <columns>
                 <TableColumn fx:id="idColumn" prefWidth="63.0" text="Varaus ID" />
             <TableColumn fx:id="asiakasidColumn" minWidth="0.0" prefWidth="76.0" text="Asiakas ID" />
-            <TableColumn fx:id="mokkinimiColumn" prefWidth="129.0" text="Mokkinimi" />
-            <TableColumn fx:id="alueColumn" prefWidth="66.0" text="Alue" />
-                <TableColumn fx:id="varattupvmColumn" prefWidth="97.0" text="Varattu pvm" />
-                <TableColumn fx:id="vahvistuspvmColumn" prefWidth="153.0" text="Vahvistus pvm" />
-                <TableColumn fx:id="varauksenalkupvmColumn" prefWidth="127.0" text="Varauksen alku pvm" />
-                <TableColumn fx:id="varauksenloppupvmColumn" prefWidth="163.0" text="Varauksen loppu pvm" />
+            <TableColumn fx:id="mokkinimiColumn" prefWidth="117.0" text="Mökin nimi" />
+            <TableColumn fx:id="alueColumn" prefWidth="78.0" text="Alue" />
+                <TableColumn fx:id="varattupvmColumn" prefWidth="83.0" text="Varattu pvm" />
+                <TableColumn fx:id="vahvistuspvmColumn" prefWidth="89.0" text="Vahvistus pvm" />
+                <TableColumn fx:id="varauksenalkupvmColumn" prefWidth="119.0" text="Varauksen alku pvm" />
+                <TableColumn fx:id="varauksenloppupvmColumn" prefWidth="133.0" text="Varauksen loppu pvm" />
+            <TableColumn fx:id="kestoColumn" prefWidth="95.0" text="Kesto päivinä" />
             </columns>
         </TableView>
-        <TextField fx:id="varausIDHaku" layoutX="105.0" layoutY="76.0" prefHeight="25.0" prefWidth="59.0" />
-        <TextField fx:id="asiakasIDHaku" layoutX="105.0" layoutY="116.0" prefHeight="25.0" prefWidth="59.0" />
-        <Label layoutX="24.0" layoutY="80.0" text="Varaus ID" />
-        <Label layoutX="24.0" layoutY="120.0" text="Asiakas ID" />
-        <Button fx:id="haeMokki" layoutX="42.0" layoutY="158.0" mnemonicParsing="false" onAction="#haeEhdoilla" text="HAE MÖKKEJÄ" />
-        <Button fx:id="haeKaikki" layoutX="42.0" layoutY="220.0" mnemonicParsing="false" onAction="#haeKaikkiButtonOnAction" prefHeight="25.0" prefWidth="94.0" text="HAE KAIKKI" />
-        <Label layoutX="1074.0" layoutY="40.0" text="Vuokrausten hallinta" />
-      <Button fx:id="varausMuokkaa" layoutX="1074.0" layoutY="108.0" mnemonicParsing="false" onAction="#mokinMuokkaus" prefHeight="25.0" prefWidth="94.0" text="MUOKKAA" />
-      <Button fx:id="varausPoista" layoutX="1074.0" layoutY="146.0" mnemonicParsing="false" onAction="#mokinPoisto" prefHeight="25.0" prefWidth="94.0" text="POISTA" />
-      <Button fx:id="vahvista" layoutX="1074.0" layoutY="68.0" mnemonicParsing="false" onAction="#mokinVahvistus" prefHeight="25.0" prefWidth="94.0" text="VAHVISTA" />
+        <TextField fx:id="varausIDHaku" layoutX="106.0" layoutY="204.0" prefHeight="25.0" prefWidth="59.0" />
+        <TextField fx:id="asiakasIDHaku" layoutX="106.0" layoutY="244.0" prefHeight="25.0" prefWidth="59.0" />
+        <Label layoutX="25.0" layoutY="208.0" text="Varaus ID" />
+        <Label layoutX="25.0" layoutY="248.0" text="Asiakas ID" />
+        <Button fx:id="haeMokki" layoutX="40.0" layoutY="309.0" mnemonicParsing="false" onAction="#haeEhdoilla" prefHeight="35.0" prefWidth="109.0" text="HAE MÖKKEJÄ" />
+        <Button layoutX="40.0" layoutY="462.0" mnemonicParsing="false" onAction="#haeArkistoidut" prefHeight="35.0" prefWidth="109.0" text="ARKISTOIDUT" />
+        <Label layoutX="1067.0" layoutY="119.0" text="Vuokrausten hallinta" />
+      <Button fx:id="varausMuokkaa" layoutX="1067.0" layoutY="213.0" mnemonicParsing="false" onAction="#mokinMuokkaus" prefHeight="35.0" prefWidth="109.0" text="MUOKKAA" />
+      <Button fx:id="varausPoista" layoutX="1067.0" layoutY="275.0" mnemonicParsing="false" onAction="#mokinPoisto" prefHeight="35.0" prefWidth="109.0" text="POISTA" />
+      <Button fx:id="vahvista" layoutX="1067.0" layoutY="152.0" mnemonicParsing="false" onAction="#mokinVahvistus" prefHeight="35.0" prefWidth="109.0" text="VAHVISTA" />
+      <TextField fx:id="mokkiNimiHaku" layoutX="106.0" layoutY="164.0" prefHeight="25.0" prefWidth="59.0" />
+      <Label layoutX="25.0" layoutY="168.0" text="Mökin nimi" />
+      <ChoiceBox fx:id="cbAlue" layoutX="23.0" layoutY="126.0" onMousePressed="#pudotusValikko" prefHeight="25.0" prefWidth="142.0" value="Valitse toiminta-alue" />
+      <AnchorPane layoutX="-1.0" prefHeight="100.0" prefWidth="1296.0" style="-fx-background-color: DEB887;">
+         <children>
+              <Label layoutX="33.0" layoutY="33.0" text="Mökkien varaukset">
+               <font>
+                  <Font name="System Bold Italic" size="24.0" />
+               </font>
+            </Label>
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutX="1196.0" layoutY="-1.0" prefHeight="756.0" prefWidth="100.0" style="-fx-background-color: DEB887;" />
+      <Separator layoutX="14.0" layoutY="377.0" prefHeight="17.0" prefWidth="161.0" />
+      <Button layoutX="1067.0" layoutY="335.0" mnemonicParsing="false" onAction="#laskunTekeminen" prefHeight="35.0" prefWidth="109.0" text="TEE LASKU" />
+      <Button layoutX="40.0" layoutY="412.0" mnemonicParsing="false" onAction="#haeAktiiviset" prefHeight="35.0" prefWidth="109.0" text="AKTIIVISET" />
     </children>
 </AnchorPane>
