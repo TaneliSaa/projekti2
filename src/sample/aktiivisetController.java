@@ -1,11 +1,13 @@
 package sample;
 
+import com.itextpdf.text.*;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -17,29 +19,33 @@ import java.io.IOException;
 
 public class aktiivisetController {
 
-    String file_path="D:\\Opiskelu\\OTI\\pdf\\";
+    String file_path="C:\\Users\\Tauno\\Desktop\\PDF\\";
 
     @FXML
     public Label etunimiLabel, sukunimiLabel, lahiosoiteLabel, postinumeroLabel, laskuIDLabel,
-    viitenumeroLabel, erapaivaLabel, paivamaaraLabel, summaLabel, alkuaikaLabel, loppuaikaLabel, varausLabel;
+            viitenumeroLabel, erapaivaLabel, paivamaaraLabel, summaLabel, alkuaikaLabel, loppuaikaLabel, varausLabel,
+    mokinNimiLabel;
 
     @FXML
-    public void luoPdf() {
+    public void luoPdf(ActionEvent event) {
 
         try {
-            String file_name = file_path + "lasku_" + laskuIDLabel.getText();
+            String file_name = file_path + "lasku_" + laskuIDLabel.getText() + ".pdf";
             Document document = new Document();
 
             PdfWriter.getInstance(document, new FileOutputStream(file_name));
 
             document.open();
 
-            Paragraph lasku = new Paragraph("LaskuID: \n " + laskuIDLabel.getText() + "\n Varaus: " + varausLabel.getText());
+
+
+            Paragraph lasku = new Paragraph("LaskuID: " + laskuIDLabel.getText());
             document.add(lasku);
             document.add(new Paragraph(""));
 
-            Paragraph asiakas = new Paragraph("Asiakas: \n " + etunimiLabel.getText() + " " + sukunimiLabel.getText()
-                    + "\n" + lahiosoiteLabel.getText() + ", " + postinumeroLabel.getText());
+            Paragraph asiakas = new Paragraph("Asiakas: " + etunimiLabel.getText() + " " + sukunimiLabel.getText()
+                    + "\n" + "Osoite: " + lahiosoiteLabel.getText() + ", " + postinumeroLabel.getText() + "\n" + "Mökin nimi: " +
+                    mokinNimiLabel.getText());
             document.add(asiakas);
             document.add(new Paragraph(""));
 
@@ -47,12 +53,18 @@ public class aktiivisetController {
             document.add(ajanjakso);
             document.add(new Paragraph(""));
 
-            Paragraph tiedot = new Paragraph("Saaja: Village Newbies Oy \n FI05 4631 1666 2345 55 \n " + "Viitenumero:" + viitenumeroLabel.getText()
-            + "\n Summa: " + summaLabel.getText() + "\n Päiväys: " + paivamaaraLabel.getText());
+            Paragraph tiedot = new Paragraph("Saaja: Village Newbies Oy \nTilinumero: FI05 4631 1666 2345 55 \n"
+                    + "Viesti: Mökki maksu \n" + "Summa: " + summaLabel.getText() + "\nPäiväys: " + paivamaaraLabel.getText());
             document.add(tiedot);
             document.add(new Paragraph(""));
 
-           PdfPTable table = new PdfPTable(3);
+            Paragraph tiedot2 = new Paragraph("Eräpäivä: " + erapaivaLabel.getText());
+            document.add(tiedot2);
+            document.add(new Paragraph(""));
+
+
+
+            PdfPTable table = new PdfPTable(3);
             PdfPCell c1 = new PdfPCell(new Phrase("Heading 1"));
             table.addCell(c1);
 
@@ -69,12 +81,15 @@ public class aktiivisetController {
             table.addCell("2.2");
             table.addCell("2.3");
 
+
             document.close();
+
 
         } catch (Exception e) {
             System.err.println(e);
         }
 
+        closeStage(event);
     }
 
     /*
@@ -82,8 +97,17 @@ public class aktiivisetController {
     */
     @FXML
     public void switchToLaskutus(ActionEvent event) throws IOException {
-            Node source = (Node) event.getSource();
-            Stage stage = (Stage) source.getScene().getWindow();
-            stage.close();
-        }
+        Node source = (Node) event.getSource();
+        Stage stage = (Stage) source.getScene().getWindow();
+        stage.close();
+    }
+
+    private void closeStage(ActionEvent event) {
+        Node source = (Node) event.getSource();
+        Stage stage = (Stage) source.getScene().getWindow();
+        stage.close();
+
+    }
+
+
 }

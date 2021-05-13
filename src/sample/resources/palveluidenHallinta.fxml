@@ -16,31 +16,31 @@
                 <Font name="System Bold Italic" size="24.0" />
             </font>
         </Label>
-      <TextField fx:id="txtnimi" layoutX="266.0" layoutY="132.0" />
-      <Label layoutX="110.0" layoutY="115.0" prefHeight="17.0" prefWidth="87.0" text="Toiminta-alue id" />
-      <Label layoutX="312.0" layoutY="115.0" text="Nimi" />
-      <TableView fx:id="tvpalvelu" layoutX="435.0" layoutY="68.0" prefHeight="384.0" prefWidth="557.0">
-        <columns>
-            <TableColumn fx:id="tbcpalvelu_id" prefWidth="68.0" text="palvelu_id" />
-            <TableColumn fx:id="tbctoimintaalue_id" prefWidth="104.0" text="toimintaalue_id" />
-            <TableColumn fx:id="tbcnimi" minWidth="0.0" prefWidth="85.0" text="nimi" />
-            <TableColumn fx:id="tbctyyppi" prefWidth="59.0" text="tyyppi" />
-          <TableColumn fx:id="tbckuvaus" minWidth="0.0" prefWidth="136.0" text="kuvaus" />
-          <TableColumn fx:id="tbchinta" minWidth="0.0" prefWidth="59.0" text="hinta" />
-            <TableColumn fx:id="tbcalv" prefWidth="59.0" text="alv" />
-        </columns>
-      </TableView>
-      <Label layoutX="315.0" layoutY="188.0" text="Kuvaus" />
-      <Label layoutX="129.0" layoutY="164.0" text="Hinta" />
-      <Label layoutX="133.0" layoutY="216.0" text="ALV" />
-      <TextField fx:id="txthinta" layoutX="73.0" layoutY="184.0" />
-      <TextField fx:id="txtalv" layoutX="73.0" layoutY="238.0" />
-      <Button layoutX="354.0" layoutY="340.0" mnemonicParsing="false" onAction="#btLisaa" prefHeight="25.0" prefWidth="73.0" text="Lisää" />
-      <Button layoutX="354.0" layoutY="371.0" mnemonicParsing="false" onAction="#btPoista" prefHeight="25.0" prefWidth="73.0" text="Poista" />
-      <Button layoutX="354.0" layoutY="402.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="73.0" text="Muokkaa" />
-      <TextField fx:id="tftyyppi" layoutX="69.0" layoutY="286.0" />
-      <Label layoutX="126.0" layoutY="269.0" text="Tyyppi" />
-      <TextField fx:id="tfToimintaalue_id" layoutX="73.0" layoutY="132.0" />
-      <TextField fx:id="txtkuvaus" layoutX="259.0" layoutY="212.0" prefHeight="105.0" prefWidth="149.0" />
+        <TextField fx:id="txtnimi" layoutX="266.0" layoutY="132.0" />
+        <Label layoutX="110.0" layoutY="115.0" prefHeight="17.0" prefWidth="87.0" text="Toiminta-alue id" />
+        <Label layoutX="312.0" layoutY="115.0" text="Nimi" />
+        <TableView fx:id="tvpalvelu" layoutX="435.0" layoutY="68.0" prefHeight="384.0" prefWidth="557.0">
+            <columns>
+                <TableColumn fx:id="tbcpalvelu_id" prefWidth="68.0" text="palvelu_id" />
+                <TableColumn fx:id="tbctoimintaalue_id" prefWidth="104.0" text="toimintaalue_id" />
+                <TableColumn fx:id="tbcnimi" minWidth="0.0" prefWidth="85.0" text="nimi" />
+                <TableColumn fx:id="tbctyyppi" prefWidth="59.0" text="tyyppi" />
+                <TableColumn fx:id="tbckuvaus" minWidth="0.0" prefWidth="136.0" text="kuvaus" />
+                <TableColumn fx:id="tbchinta" minWidth="0.0" prefWidth="59.0" text="hinta" />
+                <TableColumn fx:id="tbcalv" prefWidth="59.0" text="alv" />
+            </columns>
+        </TableView>
+        <Label layoutX="315.0" layoutY="188.0" text="Kuvaus" />
+        <Label layoutX="129.0" layoutY="164.0" text="Hinta" />
+        <Label layoutX="133.0" layoutY="216.0" text="ALV" />
+        <TextField fx:id="txthinta" layoutX="73.0" layoutY="184.0" />
+        <TextField fx:id="txtalv" layoutX="73.0" layoutY="238.0" />
+        <Button layoutX="354.0" layoutY="340.0" mnemonicParsing="false" onAction="#btLisaa" prefHeight="25.0" prefWidth="73.0" text="Lisää" />
+        <Button layoutX="354.0" layoutY="371.0" mnemonicParsing="false" onAction="#btPoista" prefHeight="25.0" prefWidth="73.0" text="Poista" />
+        <Button layoutX="354.0" layoutY="402.0" mnemonicParsing="false" onAction="#btMuokkaa" prefHeight="25.0" prefWidth="73.0" text="Muokkaa" />
+        <TextField fx:id="tftyyppi" layoutX="69.0" layoutY="286.0" />
+        <Label layoutX="126.0" layoutY="269.0" text="Tyyppi" />
+        <TextField fx:id="tfToimintaalue_id" layoutX="73.0" layoutY="132.0" />
+        <TextField fx:id="txtkuvaus" layoutX="259.0" layoutY="212.0" prefHeight="105.0" prefWidth="149.0" />
     </children>
 </Pane>

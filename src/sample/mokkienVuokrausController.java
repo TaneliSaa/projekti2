@@ -424,6 +424,8 @@ public class mokkienVuokrausController implements Initializable {
                 aktiivisetController.alkuaikaLabel.setText(vuokraus.getVarattu_alkupvm());
                 aktiivisetController.loppuaikaLabel.setText(vuokraus.getVarattu_loppupvm());
                 aktiivisetController.laskuIDLabel.setText(String.valueOf(vuokraus.getVaraus_id()));
+                aktiivisetController.mokinNimiLabel.setText(vuokraus.getMokkinimi());
+
             }
 
                 //Luodaan laskutus näkymä

@@ -12,6 +12,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
@@ -45,12 +46,7 @@ public class palveluidenHallintaController {
     public TableColumn tbcpalvelu_id;
     public TableColumn tbcnimi;
 
-    public void initialize() {
-        Palvelu palvelu = new Palvelu();
-        if (palvelu.listaaPalvelut() != null) {
-            lataaPalvelutaulu();
-        }
-    }
+
 
     public void PaivitaPalvelu() {
 
@@ -145,40 +141,91 @@ public class palveluidenHallintaController {
         lataaPalvelutaulu();
     }
 
-
-    public void btMuokkaa() throws SQLException {
-
-        /*try {
+    //@FXML
+    public void btMuokkaa() {
+        try {
             //Sql yhteyden määrittäminen
             connectionClass connectNow = new connectionClass();
             Connection connectDB = connectNow.getConnection();
 
             //Metodi, jolla pystytään suorittamaan sql komennot
             PreparedStatement pst;
-
+            System.out.println("toimiiijjko");
             //Tietojen näyttäminen textfieldeissä
-            String rivi1 = tfToimintaalue_id.getText();
+
+           /* //SQL lause jolla päivitellään tietoja
+
+            String query = "UPDATE palvelu SET toimintaalue_id=?, nimi=?, tyyppi=?, kuvaus=?, hinta=?, alv=? " +
+                    "WHERE palvelu_id = " + Integer.getInteger(String.valueOf(tbcpalvelu_id));
+
+            PreparedStatement preparedStmt = connectDB.prepareStatement(query);
+            preparedStmt.setInt(1, Integer.parseInt(String.valueOf(((tfToimintaalue_id)))));
+            preparedStmt.setString(2, String.valueOf(txtnimi));
+            preparedStmt.setInt(3, Integer.parseInt(String.valueOf(tftyyppi)));
+            preparedStmt.setString(4, String.valueOf(txtkuvaus));
+            preparedStmt.setDouble(5, Double.parseDouble(String.valueOf(txthinta)));
+            preparedStmt.setDouble(6, Double.parseDouble(String.valueOf(txtalv)));
+
+            // Suoritetaan tietokantaan lisäys.
+            int rowsInserted = preparedStmt.executeUpdate();
+            if (rowsInserted > 0) {
+                System.out.println("Palvelu lisättiin tietokantaan!");
+            }
+            preparedStmt.close(); */
+
+            int rivi1 = Integer.valueOf(tfToimintaalue_id.getText());
             String rivi2 = txtnimi.getText();
-            String rivi3 = tftyyppi.getText();
+            int rivi3 = Integer.valueOf(tftyyppi.getText());
             String rivi4 = txtkuvaus.getText();
-            String rivi5 = txthinta.getText();
-            String rivi6 = txtalv.getText();
+            double rivi5 = Double.parseDouble(txthinta.getText());
+            double rivi6 = Double.parseDouble(txtalv.getText());
+            int rivi7 = Integer.valueOf(tbcpalvelu_id.getText());
 
 
-            //Sql lause, jolla päivitetään asiakkaan tietoja taulussa
-            String query = "UPDATE palvelu set toimintaalue_id= '"+rivi1+"',nimi='"+rivi2+"',tyyppi='"+rivi3+"',kuvaus='"+rivi4+"',hinta='"+rivi5+"',alv='"+rivi6
-                    +"' where palvelu_id='"+rivi1+"'";
+
+            //Sql lause, jolla päivitetään palvelun tietoja taulussa
+            String query = "UPDATE palvelu SET toimintaalue_id= '"+rivi1+"',nimi='"+rivi2+"',tyyppi='"+rivi3+"',kuvaus='"+rivi4+"',hinta='"+rivi5+"',alv='"
+                    +rivi6+"' WHERE palvelu_id='"+rivi7+"'";
+
+
 
             //Lause, jolla suoritetaan komennot sql:ssa
             pst = connectDB.prepareStatement(query);
             pst.execute();
 
             //Kutsutaan metodia, jolla päivitetään tiedot automaattisesti
-            paivitaTiedot();
+            naytaTiedotPalvelu();
+            PaivitaPalvelu();
 
 
         } catch (Exception e) {
         }
-    }*/
     }
+
+    public void naytaTiedotPalvelu(){
+        tvpalvelu.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent mouseEvent) {
+                Palvelu palvelu = (Palvelu) tvpalvelu.getItems().get(tvpalvelu.getSelectionModel().getSelectedIndex());
+
+                tfToimintaalue_id.setText(String.valueOf(palvelu.getToimintaalue_id()));
+                txtnimi.setText(palvelu.getNimi());
+                tftyyppi.setText(String.valueOf(palvelu.getTyyppi()));
+                txtkuvaus.setText(palvelu.getKuvaus());
+                txthinta.setText(String.valueOf(palvelu.getHinta()));
+                txtalv.setText(String.valueOf(palvelu.getAlv()));
+            }
+        });
+
+    }
+    public void initialize() {
+        Palvelu palvelu = new Palvelu();
+        if (palvelu.listaaPalvelut() != null) {
+            lataaPalvelutaulu();
+        }
+        //kutsutaan metodia, jolla näytetään tiedot
+        naytaTiedotPalvelu();
+    }
+
+
 }

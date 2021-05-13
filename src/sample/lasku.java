@@ -16,9 +16,6 @@ public class lasku {
     this.setSumma(new SimpleIntegerProperty(summa));
     this.setAlv(new SimpleIntegerProperty(alv));
 
-
-
-
     }
 
 

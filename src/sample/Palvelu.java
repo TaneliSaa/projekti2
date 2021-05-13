@@ -174,8 +174,3 @@ public class Palvelu {
 
 }
 
-
-
-
-
-

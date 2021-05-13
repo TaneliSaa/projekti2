@@ -50,7 +50,7 @@ public class mokkienHallintaController implements Initializable {
     @FXML
     private TableView<Mokki> mokkiTableView;
     @FXML
-    private TableColumn<Mokki, Integer> mokki_idColumn, mokki_henkilotColumn, mokki_hintaColumn, mokki_omistajaidColumn;
+    public TableColumn<Mokki, Integer> mokki_idColumn, mokki_henkilotColumn, mokki_hintaColumn, mokki_omistajaidColumn;
     @FXML
     private TableColumn<Mokki, String> mokki_alueColumn, mokki_nimiColumn, mokki_osoiteColumn, mokki_postinroColumn,
             mokki_varusteluColumn, mokki_kuvausColumn;

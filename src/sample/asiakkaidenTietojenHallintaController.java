@@ -165,6 +165,11 @@ public class asiakkaidenTietojenHallintaController {
             //Sql yhteyden määrittäminen
             connectionClass connectNow = new connectionClass();
             Connection connectDB = connectNow.getConnection();
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("resources/mokkienHallinta.fxml"));
+            Parent root = loader.load();
+            mokkienHallintaController mokkienHallintaController = loader.getController();
+
+
 
             //Metodi, jolla pystytään suorittamaan sql komennot
             PreparedStatement pst;
@@ -175,7 +180,8 @@ public class asiakkaidenTietojenHallintaController {
             //Suoritetaan sql komento DELETE
             pst = connectDB.prepareStatement(query);
             pst.setString(1,asiakasIDLabel.getText());
-            pst.execute();
+            pst.executeUpdate();
+
 
             //Kutsutaan metodia, jolla päivitetään tiedot automaattisesti
             paivitaTiedot();
@@ -187,7 +193,6 @@ public class asiakkaidenTietojenHallintaController {
     //Ponnahdus ikkuna, mikä tulee kun painetaan poista nappia
     public void poistaAsiakasPonnahdusIkkuna() {
         Stage window = new Stage();
-
         window.initModality(Modality.APPLICATION_MODAL);
         window.setTitle("Varoitus!");
         window.setMinWidth(250);
@@ -202,9 +207,9 @@ public class asiakkaidenTietojenHallintaController {
         });
 
         hyvaksyButton.setOnAction(e->{
-            poistaAsiakas();
-            resetti();
-            window.close();
+                poistaAsiakas();
+                resetti();
+                window.close();
         });
 
         VBox layout = new VBox(10);

@@ -1,5 +1,4 @@
 package sample;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -11,7 +10,6 @@ import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import sample.connectivity.connectionClass;
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -91,18 +89,34 @@ public class rekisterointiController {
             stage.setScene(scene);
             stage.show();
             }
-        else {
-            rekisterointiPonnahdusIkkuna.display("ERROR","Salasana ei kelpaa, kokeile uudelleen.");
+        else if (kayttajaTunnusTextField.getText().equals("")){
+            rekisterointiPonnahdusIkkuna.display("ERROR","Anna käyttäjätunnus");
+        }
+
+        else if(salasanaTextField.getText().equals("")) {
+            rekisterointiPonnahdusIkkuna.display("ERROR","Anna salasana");
+
+        }
+
+        else if(salasanaUudelleenTextField.getText().equals("")) {
+            rekisterointiPonnahdusIkkuna.display("ERROR","Anna salasana uudelleen");
+
+        }
+
+        else if(salasanaUudelleenTextField.getText().equals("") && salasanaTextField.getText().equals("")) {
+            rekisterointiPonnahdusIkkuna.display("ERROR","Anna salasana ja salasana uudelleen");
+
+        }
+
+        else if(kelpaa() == false) {
+            rekisterointiPonnahdusIkkuna.display("ERROR","Salasana ei ole kelvollinen, kokeile uudelleen.");
+
         }
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
-
-
-
-
 
     public void switchToLogin(ActionEvent event) throws IOException {
         Stage stage;
