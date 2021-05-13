@@ -19,12 +19,16 @@ public class Vuokraus {
     private SimpleBooleanProperty vahvistettu;
     private SimpleLongProperty kestoaika;
     private SimpleBooleanProperty laskutettu;
+    private SimpleStringProperty palvelunimi;
+
+
 
 
 
     public Vuokraus(int varaus_id, int mokki_id, String varattu_pvm, String vahvistus_pvm, String varattu_alkupvm,
                     String varattu_loppupvm, int asiakas_id, String mokkinimi, String nimi,
-                    boolean vahvistettu, long kestoaika, boolean laskutettu) {
+                    boolean vahvistettu, long kestoaika, boolean laskutettu, int palvelu_id, String palvelunimi) {
+
         this.setVaraus_id(new SimpleIntegerProperty(varaus_id));
         this.setMokki_id(new SimpleIntegerProperty(mokki_id));
         this.setVarattu_pvm(new SimpleStringProperty(varattu_pvm));
@@ -37,6 +41,8 @@ public class Vuokraus {
         this.setVahvistettu(new SimpleBooleanProperty(vahvistettu));
         this.setKestoaika(new SimpleLongProperty(kestoaika));
         this.setLaskutettu(new SimpleBooleanProperty(laskutettu));
+        this.setPalvelu_id(new SimpleIntegerProperty(palvelu_id));
+        this.setPalvelunimi(new SimpleStringProperty(palvelunimi));
     }
 
     public int getVaraus_id() {
@@ -169,6 +175,33 @@ public class Vuokraus {
     public void setKestoaika(SimpleLongProperty kestoaika) {
         this.kestoaika = kestoaika;
     }
+    public int getPalvelu_id() {
+        return palvelu_id.get();
+    }
+
+    public SimpleIntegerProperty palvelu_idProperty() {
+        return palvelu_id;
+    }
+
+    public void setPalvelu_id(SimpleIntegerProperty palvelu_id) {
+        this.palvelu_id = palvelu_id;
+    }
+
+    private SimpleIntegerProperty palvelu_id;
+
+
+    public String getPalvelunimi() {
+        return palvelunimi.get();
+    }
+
+    public SimpleStringProperty palvelunimiProperty() {
+        return palvelunimi;
+    }
+
+    public void setPalvelunimi(SimpleStringProperty palvelunimi) {
+        this.palvelunimi = palvelunimi;
+    }
+
 
 
 }

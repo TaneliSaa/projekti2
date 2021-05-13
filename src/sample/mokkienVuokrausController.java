@@ -45,7 +45,7 @@ public class mokkienVuokrausController implements Initializable {
     @FXML
     private Label lblHallintaNotification;
     @FXML
-    TextField varausIDHaku, asiakasIDHaku, mokkiNimiHaku;
+    TextField varausIDHaku, asiakasIDHaku, mokkiNimiHaku, palveluIDHaku;
     @FXML
     Button haeMokki, haeKaikki, varausMuokkaa, varausPoista;
     @FXML
@@ -53,9 +53,9 @@ public class mokkienVuokrausController implements Initializable {
     @FXML
     TableView<Vuokraus> mokkiTiedot;
     @FXML
-    TableColumn<Mokki, Integer> idColumn;
+    TableColumn<Mokki, Integer> idColumn, asiakasidColumn, palveluIDColumn;
     @FXML
-    TableColumn<Mokki, String> varattupvmColumn, vahvistuspvmColumn, varauksenalkupvmColumn, varauksenloppupvmColumn, asiakasidColumn, mokkinimiColumn, alueColumn, kestoColumn;
+    TableColumn<Mokki, String> varattupvmColumn, vahvistuspvmColumn, varauksenalkupvmColumn, varauksenloppupvmColumn,  mokkinimiColumn, alueColumn, kestoColumn, palvelunnimiColumn;
 
     // Alustetaan taulukkoon sarakkeet
     @Override
@@ -70,6 +70,8 @@ public class mokkienVuokrausController implements Initializable {
         mokkinimiColumn.setCellValueFactory(new PropertyValueFactory<>("mokkinimi"));
         alueColumn.setCellValueFactory(new PropertyValueFactory<>("nimi"));
         kestoColumn.setCellValueFactory(new PropertyValueFactory<>("kestoaika"));
+        palveluIDColumn.setCellValueFactory(new PropertyValueFactory<>("palvelu_id"));
+        palvelunnimiColumn.setCellValueFactory(new PropertyValueFactory<>("palvelunimi"));
 
         mokkiTiedot.setRowFactory(tv -> new TableRow<Vuokraus>() {
             @Override
@@ -120,9 +122,10 @@ public class mokkienVuokrausController implements Initializable {
     public void haeArkistoidut() {
 
         String query = "SELECT v.varaus_id, v.varattu_pvm, v.vahvistus_pvm, v.varattu_alkupvm, " +
-                "v.varattu_loppupvm, v.asiakas_id, v.vahvistettu, v.laskutettu, m.mokki_id, m.mokkinimi, ta.nimi " +
-                "FROM varaus v INNER JOIN mokki m ON v.mokki_mokki_id = m.mokki_id INNER JOIN toimintaalue ta ON " +
-                "m.toimintaalue_id = ta.toimintaalue_id WHERE v.laskutettu = " + true;
+                "v.varattu_loppupvm, v.asiakas_id, v.vahvistettu, v.laskutettu, m.mokki_id, m.mokkinimi, ta.nimi, " +
+                "vp.palvelu_id, p.palvelunimi FROM varaus v INNER JOIN mokki m ON v.mokki_mokki_id = m.mokki_id INNER JOIN toimintaalue ta ON " +
+                "m.toimintaalue_id = ta.toimintaalue_id INNER JOIN varauksen_palvelut vp ON v.varaus_id = vp.varaus_id " +
+                "INNER JOIN palvelu p ON vp.palvelu_id = p.palvelu_id WHERE v.laskutettu = " + true;
 
         mokkiHaku(query);
     }
@@ -131,9 +134,10 @@ public class mokkienVuokrausController implements Initializable {
     public void haeAktiiviset() {
 
         String query = "SELECT v.varaus_id, v.varattu_pvm, v.vahvistus_pvm, v.varattu_alkupvm, " +
-                "v.varattu_loppupvm, v.asiakas_id, v.vahvistettu, v.laskutettu, m.mokki_id, m.mokkinimi, ta.nimi " +
-                "FROM varaus v INNER JOIN mokki m ON v.mokki_mokki_id = m.mokki_id INNER JOIN toimintaalue ta ON " +
-                "m.toimintaalue_id = ta.toimintaalue_id WHERE v.laskutettu = " + false;
+                "v.varattu_loppupvm, v.asiakas_id, v.vahvistettu, v.laskutettu, m.mokki_id, m.mokkinimi, ta.nimi, " +
+                "vp.palvelu_id, p.palvelunimi FROM varaus v INNER JOIN mokki m ON v.mokki_mokki_id = m.mokki_id INNER JOIN toimintaalue ta ON " +
+                "m.toimintaalue_id = ta.toimintaalue_id INNER JOIN varauksen_palvelut vp ON v.varaus_id = vp.varaus_id " +
+                "INNER JOIN palvelu p ON vp.palvelu_id = p.palvelu_id WHERE v.laskutettu = " + false;
 
         mokkiHaku(query);
     }
@@ -180,11 +184,13 @@ public class mokkienVuokrausController implements Initializable {
                 String varattuloppupvm = queryResult.getDate("v.varattu_loppupvm").toString();
                 boolean vahvistettu = queryResult.getBoolean("v.vahvistettu");
                 boolean laskutettu = queryResult.getBoolean("v.laskutettu");
+                int palvelu_id = queryResult.getInt("vp.palvelu_id");
+                String palvelunimi = queryResult.getString("p.palvelunimi");
                 long kesto = Math.abs(queryResult.getDate("v.varattu_loppupvm").getTime() - queryResult.getDate("v.varattu_alkupvm").getTime());
                 long kestoaika = (TimeUnit.DAYS.convert(kesto, TimeUnit.MILLISECONDS));
 
                 vuokraus.add(new Vuokraus(varaus_id, mokki_id, varattupvm, vahvistuspvm, varattualkupvm, varattuloppupvm,
-                        asiakasid, mokkinimi, toimintaalue, vahvistettu, kestoaika, laskutettu));
+                        asiakasid, mokkinimi, toimintaalue, vahvistettu, kestoaika, laskutettu, palvelu_id, palvelunimi));
 
             }
             mokkiTiedot.setItems(vuokraus);
@@ -202,6 +208,7 @@ public class mokkienVuokrausController implements Initializable {
         int omistaja = -1;
         String alue = cbAlue.getValue();
         String nimi = mokkiNimiHaku.getText();
+        int palvelu = -1;
 
         try {
             id = Integer.parseInt(varausIDHaku.getText().trim());
@@ -212,10 +219,16 @@ public class mokkienVuokrausController implements Initializable {
             omistaja = Integer.parseInt(asiakasIDHaku.getText().trim());
         } catch (NumberFormatException ignored) {
         }
+        try{
+            palvelu = Integer.parseInt(palveluIDHaku.getText().trim());
+        } catch (NumberFormatException ignored) {
+        }
 
-        String query = "SELECT v.varaus_id, v.varattu_pvm, v.vahvistus_pvm, v.varattu_alkupvm, v.varattu_loppupvm, v.asiakas_id, " +
-                "v.vahvistettu, m.mokkinimi, ta.nimi FROM varaus v INNER JOIN mokki m ON v.mokki_mokki_id = m.mokki_id INNER JOIN " +
-                "toimintaalue ta ON m.toimintaalue_id = ta.toimintaalue_id WHERE ";
+        String query = "SELECT v.varaus_id, v.varattu_pvm, v.vahvistus_pvm, v.varattu_alkupvm," +
+                "v.varattu_loppupvm, v.asiakas_id, v.vahvistettu, v.laskutettu, m.mokki_id, m.mokkinimi, ta.nimi, " +
+                "vp.palvelu_id, p.palvelunimi FROM varaus v INNER JOIN mokki m ON v.mokki_mokki_id = m.mokki_id INNER JOIN toimintaalue ta ON " +
+                "m.toimintaalue_id = ta.toimintaalue_id INNER JOIN varauksen_palvelut vp ON v.varaus_id = vp.varaus_id " +
+                "INNER JOIN palvelu p ON vp.palvelu_id = p.palvelu_id WHERE ";
 
         if (id > 0) {
             query += "v.varaus_id = " + id;
@@ -228,6 +241,9 @@ public class mokkienVuokrausController implements Initializable {
             if (!nimi.equals("")) {
                 query += " AND m.mokkinimi = '" + nimi + "'";
             }
+            if (palvelu > 0) {
+                query += " AND vp.palvelu_id = " + palvelu;
+            }
         } else if (omistaja > 0) {
             query += "v.asiakas_id = " + omistaja;
             if (!alue.equals("Valitse toiminta-alue")) {
@@ -236,16 +252,27 @@ public class mokkienVuokrausController implements Initializable {
             if (!nimi.equals("")) {
                 query += " AND m.mokkinimi = '" + nimi + "'";
             }
+            if (palvelu > 0) {
+                query += " AND vp.palvelu_id = " + palvelu;
+            }
         } else if (!alue.equals("Valitse toiminta-alue")) {
             query += "ta.nimi = '" + alue + "'";
             if (!nimi.equals("")) {
                 query += " AND m.mokkinimi = '" + nimi + "'";
             }
+            if (palvelu > 0) {
+                query += " AND vp.palvelu_id = " + palvelu;
+            }
         } else if (!nimi.equals("")) {
             query += "m.mokkinimi = '" + nimi + "'";
-        }
+            if (palvelu > 0) {
+                query += " AND vp.palvelu_id = " + palvelu;
+            }
+        } else if (palvelu > 0) {
+                query += "vp.palvelu_id = " + palvelu;
+            }
 
-        if (id > 0 || omistaja > 0 || !alue.equals("Valitse toiminta-alue") || !nimi.equals("")) {
+        if (id > 0 || omistaja > 0 || !alue.equals("Valitse toiminta-alue") || !nimi.equals("") || palvelu > 0 ) {
             mokkiHaku(query);
         } else {
             System.out.println("Haku epäonnistui");
@@ -426,11 +453,11 @@ public class mokkienVuokrausController implements Initializable {
                 aktiivisetController.laskuIDLabel.setText(String.valueOf(vuokraus.getVaraus_id()));
             }
 
-                //Luodaan laskutus näkymä
-                Stage stage = new Stage();
-                stage.setScene(new Scene(root));
-                stage.setTitle("Mökkisovellus 5000");
-                stage.show();
+            //Luodaan laskutus näkymä
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("Mökkisovellus 5000");
+            stage.show();
 
         } catch (IOException |
                 SQLException e) {
