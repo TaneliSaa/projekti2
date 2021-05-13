@@ -11,10 +11,13 @@ public class lasku {
     private SimpleIntegerProperty alv;
 
     public lasku(int lasku_id, int varaus_id, int summa, int alv) {
-        this.setLasku_id(new SimpleIntegerProperty(lasku_id));
-        this.setVaraus_id(new SimpleIntegerProperty(varaus_id));
-        this.setSumma(new SimpleIntegerProperty(summa));
-        this.setAlv(new SimpleIntegerProperty(alv));
+    this.setLasku_id(new SimpleIntegerProperty(lasku_id));
+    this.setVaraus_id(new SimpleIntegerProperty(varaus_id));
+    this.setSumma(new SimpleIntegerProperty(summa));
+    this.setAlv(new SimpleIntegerProperty(alv));
+
+
+
 
     }
 
@@ -51,7 +54,3 @@ public class lasku {
         this.alv = alv;
     }
 }
-
-
-
-

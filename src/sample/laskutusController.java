@@ -1,4 +1,3 @@
-
 package sample;
 
 import javafx.collections.FXCollections;
@@ -23,6 +22,9 @@ import java.sql.SQLException;
 public class laskutusController {
 
     @FXML
+    private TextField summaTextField;
+
+    @FXML
     private Label etunimiLabel;
 
     @FXML
@@ -44,33 +46,41 @@ public class laskutusController {
     private Label katuosoiteLabel;
 
     @FXML
-    private Label palveluLabel;
+    private Label laskunNumeroLabel;
 
     @FXML
-    private Label sahkopostiLabel;
-
-    @FXML
-    private Label puhelinNumeroLabel;
-
-    @FXML
-    private TableView<lasku> tableView;
-
-    @FXML
-    private TableColumn<lasku, Integer> laskuIDColumn;
-
-    @FXML
-    private TableColumn<lasku, Integer> varausidColumn;
-
-    @FXML
-    private TableColumn<lasku, Integer> summaColumn;
-
-    @FXML
-    private TableColumn<lasku, Integer> alvColumn;
+    private TableView<asiakas> tableView;
 
     @FXML
     private TextField hakuTextField;
 
-    ObservableList<lasku> oblist = FXCollections.observableArrayList();
+    @FXML
+    private TableColumn<asiakas, Integer> asiakas_idColumn;
+
+    @FXML
+    private TableColumn<asiakas, Integer> postinroColumn;
+
+    @FXML
+    private TableColumn<asiakas, String> etunimiColumn;
+
+    @FXML
+    private TableColumn<asiakas, String> sukunimiColumn;
+
+    @FXML
+    private TableColumn<asiakas, String> lahiosoiteColumn;
+
+    @FXML
+    private TableColumn<asiakas, String> emailColumn;
+
+    @FXML
+    private TableColumn<asiakas, String> puhelinnroColumn;
+
+
+    ObservableList<asiakas> oblist = FXCollections.observableArrayList();
+
+
+
+
 
     public void initialize() {
 
@@ -80,27 +90,31 @@ public class laskutusController {
             Connection connectDB = connectNow.getConnection();
 
             //Sql lause, jolla valitaan kaikki tiedot asiakas taulusta
-            ResultSet rs = connectDB.createStatement().executeQuery("SELECT * FROM lasku");
+            ResultSet rs = connectDB.createStatement().executeQuery("select * from asiakas");
 
             //Taulun kaikkien tietojen läpikäyminen ja lisääminen tableviewiin
-            while (rs.next()) {
-                oblist.add(new lasku(rs.getInt("lasku_id"), rs.getInt("varaus_id"), rs.getInt("summa"),
-                        rs.getInt("alv")));
+            while(rs.next()) {
+                oblist.add(new asiakas(rs.getInt("asiakas_id"),rs.getInt("postinro"),rs.getString("etunimi"),
+                        rs.getString("sukunimi"),rs.getString("lahiosoite"),rs.getString("email"),rs.getString("puhelinnro")));
             }
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
 
         //Scene builderin osien tietojen settaaminen tietokannasta
-        laskuIDColumn.setCellValueFactory(new PropertyValueFactory<lasku, Integer>("lasku_id"));
-        varausidColumn.setCellValueFactory(new PropertyValueFactory<lasku, Integer>("varaus_id"));
-        summaColumn.setCellValueFactory(new PropertyValueFactory<lasku, Integer>("summa"));
-        alvColumn.setCellValueFactory(new PropertyValueFactory<lasku, Integer>("alv"));
+        asiakas_idColumn.setCellValueFactory(new PropertyValueFactory<asiakas,Integer>("asiakas_id"));
+        postinroColumn.setCellValueFactory(new PropertyValueFactory<asiakas,Integer>("postinro"));
+        etunimiColumn.setCellValueFactory(new PropertyValueFactory<asiakas,String>("etunimi"));
+        sukunimiColumn.setCellValueFactory(new PropertyValueFactory<asiakas,String>("sukunimi"));
+        lahiosoiteColumn.setCellValueFactory(new PropertyValueFactory<asiakas,String>("lahiosoite"));
+        emailColumn.setCellValueFactory(new PropertyValueFactory<asiakas,String>("email"));
+        puhelinnroColumn.setCellValueFactory(new PropertyValueFactory<asiakas,String>("puhelinnro"));
 
         //Asetetaan kaikki taulun tiedot listaan
         tableView.setItems(oblist);
 
         naytaTiedot();
+
 
     }
 
@@ -117,29 +131,30 @@ public class laskutusController {
 
             //Sql lause, jolla haetaan tietoja annetulla sanalla tai kirjaimella
             String sana = hakuTextField.getText();
-            String query = "select * from asiakas \n" +
-                    "inner join varaus on asiakas.asiakas_id = varaus.asiakas_id\n" +
-                    "inner join lasku on varaus.varaus_id = lasku.varaus_id\n" +
-                    "where etunimi like '%" + sana + "%' or sukunimi like '%" + sana +
-                    "%' or lahiosoite like '%" + sana + "%' or ";
+            String query = "SELECT asiakas_id,postinro,etunimi,sukunimi,lahiosoite,email,puhelinnro FROM asiakas WHERE postinro LIKE '%"+ sana + "%' OR\n" +
+                    "etunimi LIKE '%" + sana + "%' OR sukunimi LIKE '%" + sana + "%' OR lahiosoite LIKE '%" + sana + "%' OR email LIKE '%" + sana + "%' OR\n" +
+                    "puhelinnro LIKE '%" + sana + "%'";
 
             ResultSet rs = connectDB.createStatement().executeQuery(query);
 
             //While loop, joka lisää kaikki löydetyt asiakkaat listaan
-            while (rs.next()) {
-                oblist.add(new lasku(rs.getInt("lasku_id"), rs.getInt("varaus_id"), rs.getInt("summa"),
-                        rs.getInt("alv")));
+            while(rs.next()) {
+                oblist.add(new asiakas(rs.getInt("asiakas_id"), rs.getInt("postinro"), rs.getString("etunimi"),
+                        rs.getString("sukunimi"), rs.getString("lahiosoite"), rs.getString("email"), rs.getString("puhelinnro")));
             }
 
-        } catch (SQLException throwables) {
+        } catch(SQLException throwables) {
             throwables.printStackTrace();
         }
 
         //Scene builderin osien tietojen settaaminen tietokannasta
-        laskuIDColumn.setCellValueFactory(new PropertyValueFactory<lasku, Integer>("lasku_id"));
-        varausidColumn.setCellValueFactory(new PropertyValueFactory<lasku, Integer>("varaus_id"));
-        summaColumn.setCellValueFactory(new PropertyValueFactory<lasku, Integer>("summa"));
-        alvColumn.setCellValueFactory(new PropertyValueFactory<lasku, Integer>("alv"));
+        asiakas_idColumn.setCellValueFactory(new PropertyValueFactory<asiakas,Integer>("asiakas_id"));
+        postinroColumn.setCellValueFactory(new PropertyValueFactory<asiakas,Integer>("postinro"));
+        etunimiColumn.setCellValueFactory(new PropertyValueFactory<asiakas,String>("etunimi"));
+        sukunimiColumn.setCellValueFactory(new PropertyValueFactory<asiakas,String>("sukunimi"));
+        lahiosoiteColumn.setCellValueFactory(new PropertyValueFactory<asiakas,String>("lahiosoite"));
+        emailColumn.setCellValueFactory(new PropertyValueFactory<asiakas,String>("email"));
+        puhelinnroColumn.setCellValueFactory(new PropertyValueFactory<asiakas,String>("puhelinnro"));
 
         //Asetetaan kaikki taulun tiedot listaan
         tableView.setItems(oblist);
@@ -153,46 +168,14 @@ public class laskutusController {
             @Override
             public void handle(MouseEvent event) {
                 //Lause, jolla valitaan taulukosta kaikki rivit ja sarakkeet
-                lasku lk = tableView.getItems().get(tableView.getSelectionModel().getSelectedIndex());
-                connectionClass connectNow = new connectionClass();
-                Connection connectDB = connectNow.getConnection();
+                asiakas as = tableView.getItems().get(tableView.getSelectionModel().getSelectedIndex());
 
-                String query = ("select * from asiakas \n" +
-                        "inner join varaus on asiakas.asiakas_id = varaus.asiakas_id\n" +
-                        "inner join lasku on varaus.varaus_id = lasku.varaus_id\n" +
-                        "where varaus.varaus_id = '" + lk.getVaraus_id() + "'");
+                //Näytetään taulukon tiedot omissa textfieldeissä
+                postinumeroLabel.setText(as.getPostinro().toString());
+                etunimiLabel.setText(as.getEtunimi());
+                sukunimiLabel.setText(as.getSukunimi());
+                lahiosoiteLabel.setText(as.getLahiosoite());
 
-                String query2 = ("select * from mokki\n" +
-                        "inner join asiakas on mokki.omistaja_id = asiakas.asiakas_id\n" +
-                        "inner join varaus on mokki.mokki_id = varaus.mokki_mokki_id\n" +
-                        "where varaus.varaus_id = '" + lk.getVaraus_id() + "'");
-
-                try {
-
-                    ResultSet rs = connectDB.createStatement().executeQuery(query);
-                    ResultSet rs2 = connectDB.createStatement().executeQuery(query2);
-
-
-                    while (rs.next()) {
-                        etunimiLabel.setText(rs.getString(3));
-                        sukunimiLabel.setText(rs.getString(4));
-                        lahiosoiteLabel.setText(rs.getString(5));
-                        postinumeroLabel.setText(rs.getString(2));
-                        sahkopostiLabel.setText(rs.getString(6));
-                        puhelinNumeroLabel.setText(rs.getString(7));
-
-                    }
-
-                    while (rs2.next()) {
-                        mokinNimiLabel.setText(rs2.getString(4));
-                        mokinPostiNumeroLabel.setText(rs2.getString(3));
-                        katuosoiteLabel.setText(rs2.getString(5));
-
-                    }
-
-                } catch (Exception e) {
-
-                }
             }
         });
     }
@@ -203,10 +186,70 @@ public class laskutusController {
         sukunimiLabel.setText("Sukunimi");
         lahiosoiteLabel.setText("Lähiosoite");
         hakuTextField.setText("");
-        mokinNimiLabel.setText("Mökin nimi");
-        mokinPostiNumeroLabel.setText("Postinumero");
-        katuosoiteLabel.setText("Katuosoite");
-        palveluLabel.setText("Palvelu");
-        haku();
+
+
     }
+
+    public void laskuta() {
+
+
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("resources/aktiivisetLaskut.fxml"));
+            Parent root = loader.load();
+
+            aktiivisetController aktiivisetController = loader.getController();
+
+            //aktiivisetController.vastaanOtaTiedot(etunimiLabel.getText());
+            //aktiivisetController.vastaanOtaTiedot(sukunimiLabel.getText());
+
+            Stage stage = new Stage();
+            stage.setScene(new Scene(root));
+            stage.setTitle("kokeilu");
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    //Metodi, jolla pääsee takaisin päänäyttöön
+    private Stage stage;
+    private Scene scene;
+    private Parent root;
+
+    //Luodaan uusi ikkuna, joka korvataan vanhalla
+    public void switchToPaaNaytto(ActionEvent event) throws IOException {
+        this.root = (Parent) FXMLLoader.load(this.getClass().getResource("resources/paaNaytto.fxml"));
+        this.stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        this.scene = new Scene(this.root);
+        this.stage.setScene(this.scene);
+        this.stage.show();
+    }
+
+    //Luodaan uusi ikkuna, joka korvataan vanhalla
+    public void switchToAktiiviset(ActionEvent event) throws IOException {
+        this.root = (Parent) FXMLLoader.load(this.getClass().getResource("resources/aktiivisetLaskut.fxml"));
+        this.stage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        this.scene = new Scene(this.root);
+        this.stage.setScene(this.scene);
+        this.stage.show();
+    }
+
 }
