@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="530.0" prefWidth="813.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.aktiivisetController">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="530.0" prefWidth="813.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.aktiivisetController">
    <children>
       <Button layoutX="52.0" layoutY="483.0" mnemonicParsing="false" onAction="#switchToLaskutus" text="Takaisin" />
       <Label layoutX="355.0" layoutY="30.0" text="Laskutus">
@@ -33,7 +33,15 @@
       <Label layoutX="547.0" layoutY="342.0" text="Mökki maksu" />
       <Label layoutX="451.0" layoutY="391.0" text="Eräpäivä" />
       <Label layoutX="575.0" layoutY="463.0" text="Summa" />
-      <Label layoutX="645.0" layoutY="463.0" text="Label" />
+      <Label fx:id="summaLabel" layoutX="645.0" layoutY="463.0" text="Label" />
       <Label fx:id="erapaivaLabel" layoutX="561.0" layoutY="391.0" text="Label" />
+      <Label layoutX="38.0" layoutY="430.0" text="Päivämäärä" />
+      <Label fx:id="paivamaaraLabel" layoutX="151.0" layoutY="430.0" text="Label" />
+      <Button layoutX="704.0" layoutY="483.0" mnemonicParsing="false" onAction="#luoPdf" prefHeight="25.0" prefWidth="57.0" text="PDF" />
+      <Label layoutX="68.0" layoutY="359.0" text="Ajanjakso" />
+      <Label fx:id="alkuaikaLabel" layoutX="212.0" layoutY="359.0" text="Label" />
+      <Label fx:id="loppuaikaLabel" layoutX="212.0" layoutY="400.0" text="Label" />
+      <Label layoutX="441.0" layoutY="146.0" text="VarausID" />
+      <Label fx:id="varausLabel" layoutX="547.0" layoutY="146.0" text="Label" />
    </children>
 </AnchorPane>

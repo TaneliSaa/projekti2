@@ -3,8 +3,6 @@ package sample;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.input.KeyCode;
