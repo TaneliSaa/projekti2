@@ -70,7 +70,7 @@ public class vuokrausDialogController {
                     System.out.println("Mökkiä muokattiin onnistuneesti!");
                     // Haetaan päivityksen jälkeen kaikki mökit taululle.
                     // TODO hae vain päivitetty mökki?
-                    controller.haeKaikki("mokit");
+                    controller.haeAktiiviset();
                 }
                 preparedStmt.close();
 
