@@ -83,5 +83,7 @@ public class Palvelu {
     public void setAlv(SimpleDoubleProperty alv) {
         this.alv = alv;
     }
+
+    
 }
 
