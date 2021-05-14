@@ -1,176 +1,87 @@
 package sample;
-
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
-import sample.connectivity.connectionClass;
-
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class Palvelu {
 
-    private String nimi;
-    private int tyyppi;
-    private double hinta;
-    private double alv;
-    private String kuvaus;
-    private int toimintaalue_id;
-    private int palvelu_id;
-
-    public int getPalvelu_id() {
-        return palvelu_id;
-    }
-
-
+    private SimpleIntegerProperty palvelu_id;
+    private SimpleIntegerProperty toimintaalue_id;
+    private SimpleStringProperty nimi;
+    private SimpleIntegerProperty tyyppi;
+    private SimpleStringProperty kuvaus;
+    private SimpleDoubleProperty hinta;
+    private SimpleDoubleProperty alv;
 
     public Palvelu() {
     }
 
-    public Palvelu(String nimi, int tyyppi, double hinta, double alv, int toimintaalue_id) {
-        this.nimi = nimi;
-        this.tyyppi = tyyppi;
-        this.hinta = hinta;
-        this.alv = alv;
-        this.toimintaalue_id = toimintaalue_id;
-    }
-
-    /**
-     * Palauttaa listan kaikista tietokannassa olevista Palvelu-olioista.
-     *
-     * @return Lista kaikista Palvelu-olioista.
-     * @throws SQLException Heitetään, jos tietokannan kanssa kommunikoinnissa ilmenee ongelmia.
-     */
-    public List<Palvelu> listaa() throws SQLException {
-        connectionClass connectNow = new connectionClass();
-        Connection connectDB = connectNow.getConnection();
-
-        String query = "SELECT * FROM palvelu";
-
-        PreparedStatement lause = connectDB.prepareStatement(query);
-
-        ResultSet tulokset = lause.executeQuery();
-
-        // Jos kysely ei tuota tuloksia, palautetaan tyhjä
-        // Samalla siirrytään ResultSet-olion ensimmäiselle riville
-
-        if (!tulokset.next()) return null;
-
-        List<Palvelu> palvelut = new ArrayList<>();
-
-        // Ollaan jo ResultSet-olion ensimmäisellä rivillä. Rivin lukeminen täytyy tapahtua ennen seuraavaa
-        // tulokset.next()-metodikutsua!
-
-        do {
-            Palvelu palvelu = luoPalveluTuloksista(tulokset);
-            palvelut.add(palvelu);
-        } while (tulokset.next());
-
-        tulokset.close();
-        lause.close();
-        //yhteys.close();
-
-        return palvelut;
-
-    }
-
-    private Palvelu luoPalveluTuloksista(ResultSet tulokset) throws SQLException {
-        var palvelu = new Palvelu();
-        palvelu.setPalvelu_id(tulokset.getInt("palvelu_id"));
-        palvelu.setToimintaalue_id(tulokset.getInt("toimintaalue_id"));
-        palvelu.setNimi(tulokset.getString("nimi"));
-        palvelu.setTyyppi(tulokset.getInt("tyyppi"));
-        palvelu.setKuvaus(tulokset.getString("kuvaus"));
-        palvelu.setHinta(tulokset.getDouble("hinta"));
-        palvelu.setAlv(tulokset.getDouble("alv"));
-
-        return palvelu;
-    }
-
-    public List<Palvelu> listaaPalvelut() {
-        try {
-            return listaa();
-        } catch (SQLException e) {
-
-            e.printStackTrace();
-
-            return null;
-        }
-    }
-
-    public void poistaPalvelu(Integer id) throws SQLException{
-        connectionClass connectNow = new connectionClass();
-        Connection connectDB = connectNow.getConnection();
-
-        String query = "DELETE FROM palvelu WHERE palvelu_id =?";
-
-        PreparedStatement lause = connectDB.prepareStatement(query);
-        lause.setInt(1, id);
-
-        lause.executeUpdate();
-        lause.close();
+    public Palvelu(int palvelu_id,int toimintaalue_id,String nimi, int tyyppi,String kuvaus, double hinta, double alv) {
+        this.setPalvelu_id(new SimpleIntegerProperty(palvelu_id));
+        this.setToimintaalue_id(new SimpleIntegerProperty(toimintaalue_id));
+        this.setNimi(new SimpleStringProperty(nimi));
+        this.setTyyppi(new SimpleIntegerProperty(tyyppi));
+        this.setKuvaus(new SimpleStringProperty(kuvaus));
+        this.setHinta(new SimpleDoubleProperty(hinta));
+        this.setAlv(new SimpleDoubleProperty(alv));
 
     }
 
 
-    public void setPalvelu_id(int palvelu_id) {
+    public int getPalvelu_id() {
+        return palvelu_id.get();
+    }
+
+    public void setPalvelu_id(SimpleIntegerProperty palvelu_id) {
         this.palvelu_id = palvelu_id;
     }
 
-
-
-    public String getNimi() {
-        return nimi;
+    public int getToimintaalue_id() {
+        return toimintaalue_id.get();
     }
 
-    public void setNimi(String nimi) {
+    public void setToimintaalue_id(SimpleIntegerProperty toimintaalue_id) {
+        this.toimintaalue_id = toimintaalue_id;
+    }
+
+    public String getNimi() {
+        return nimi.get();
+    }
+
+    public void setNimi(SimpleStringProperty nimi) {
         this.nimi = nimi;
     }
 
     public int getTyyppi() {
-        return tyyppi;
+        return tyyppi.get();
     }
 
-    public void setTyyppi(int tyyppi) {
+    public void setTyyppi(SimpleIntegerProperty tyyppi) {
         this.tyyppi = tyyppi;
     }
 
-    public double getHinta() {
-        return hinta;
+    public String getKuvaus() {
+        return kuvaus.get();
     }
 
-    public void setHinta(double hinta) {
+    public void setKuvaus(SimpleStringProperty kuvaus) {
+        this.kuvaus = kuvaus;
+    }
+
+    public double getHinta() {
+        return hinta.get();
+    }
+
+    public void setHinta(SimpleDoubleProperty hinta) {
         this.hinta = hinta;
     }
 
     public double getAlv() {
-        return alv;
+        return alv.get();
     }
 
-    public void setAlv(double alv) {
+    public void setAlv(SimpleDoubleProperty alv) {
         this.alv = alv;
     }
-
-    public int getToimintaalue_id() {
-        return toimintaalue_id;
-    }
-
-    public void setToimintaalue_id(int toimintaalue_id) {
-        this.toimintaalue_id = toimintaalue_id;
-    }
-
-    public String getKuvaus() {
-        return kuvaus;
-    }
-
-    public void setKuvaus(String kuvaus) {
-        this.kuvaus = kuvaus;
-    }
-
-
 }
 

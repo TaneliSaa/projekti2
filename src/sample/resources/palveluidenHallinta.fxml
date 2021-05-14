@@ -4,11 +4,12 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextArea?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Font?>
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.palveluidenHallintaController">
+<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.palveluidenHallintaController">
     <children>
         <Button layoutX="14.0" layoutY="461.0" mnemonicParsing="false" onAction="#switchToPaaNaytto" text="Takaisin" />
         <Label layoutX="386.0" layoutY="14.0" text="Palveluiden hallinta">
@@ -41,6 +42,8 @@
         <TextField fx:id="tftyyppi" layoutX="69.0" layoutY="286.0" />
         <Label layoutX="126.0" layoutY="269.0" text="Tyyppi" />
         <TextField fx:id="tfToimintaalue_id" layoutX="73.0" layoutY="132.0" />
-        <TextField fx:id="txtkuvaus" layoutX="259.0" layoutY="212.0" prefHeight="105.0" prefWidth="149.0" />
+      <Label layoutX="122.0" layoutY="60.0" text="PalveluID" />
+      <Label fx:id="palveluIDLabel" layoutX="137.0" layoutY="86.0" text="ID" />
+      <TextArea fx:id="kuvausTextArea" layoutX="253.0" layoutY="211.0" prefHeight="116.0" prefWidth="169.0" />
     </children>
 </Pane>

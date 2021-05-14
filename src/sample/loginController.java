@@ -59,6 +59,7 @@ public class loginController {
                 this.stage = (Stage)((Node)event.getSource()).getScene().getWindow();
                 this.scene = new Scene(this.root);
                 this.stage.setScene(this.scene);
+                this.stage.centerOnScreen();
                 this.stage.show();
             }
         } catch (Exception e) {
@@ -78,6 +79,7 @@ public class loginController {
         this.stage = (Stage)((Node)event.getSource()).getScene().getWindow();
         this.scene = new Scene(this.root);
         this.stage.setScene(this.scene);
+        this.stage.centerOnScreen();
         this.stage.show();
 
     }

@@ -165,11 +165,6 @@ public class asiakkaidenTietojenHallintaController {
             //Sql yhteyden määrittäminen
             connectionClass connectNow = new connectionClass();
             Connection connectDB = connectNow.getConnection();
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("resources/mokkienHallinta.fxml"));
-            Parent root = loader.load();
-            mokkienHallintaController mokkienHallintaController = loader.getController();
-
-
 
             //Metodi, jolla pystytään suorittamaan sql komennot
             PreparedStatement pst;
@@ -182,15 +177,14 @@ public class asiakkaidenTietojenHallintaController {
             pst.setString(1,asiakasIDLabel.getText());
             pst.executeUpdate();
 
-
             //Kutsutaan metodia, jolla päivitetään tiedot automaattisesti
             paivitaTiedot();
 
         } catch (Exception e) {
+            }
         }
-    }
 
-    //Ponnahdus ikkuna, mikä tulee kun painetaan poista nappia
+        //Ponnahdus ikkuna, mikä tulee kun painetaan poista nappia
     public void poistaAsiakasPonnahdusIkkuna() {
         Stage window = new Stage();
         window.initModality(Modality.APPLICATION_MODAL);
