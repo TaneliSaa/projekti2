@@ -1,4 +1,5 @@
 package sample;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -10,6 +11,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 import sample.connectivity.connectionClass;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -72,51 +74,35 @@ public class rekisterointiController {
         Parent root;
 
         try {
-        //Sql yhteyden määrittäminen
-        connectionClass connectNow = new connectionClass();
-        Connection connectDB = connectNow.getConnection();
-        //SQL lause
-        String query = "INSERT INTO kayttaja(kayttaja_nimi,salasana) VALUES(?,?)";
-        PreparedStatement pst = connectDB.prepareStatement(query);
-        pst.setString(1,kayttajaTunnusTextField.getText());
-        pst.setString(2,salasanaTextField.getText());
-        if (kelpaa() && salasanaTextField.getText().equals(salasanaUudelleenTextField.getText())) {
-            rekisterointiPonnahdusIkkuna.display("Nice","Käyttäjä luotu!");
-            pst.executeUpdate();
-            root = (Parent) FXMLLoader.load(this.getClass().getResource("resources/login.fxml"));
-            stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            scene = new Scene(root);
-            stage.setScene(scene);
-            stage.show();
+            //Sql yhteyden määrittäminen
+            connectionClass connectNow = new connectionClass();
+            Connection connectDB = connectNow.getConnection();
+            //SQL lause
+            String query = "INSERT INTO kayttaja(kayttaja_nimi,salasana) VALUES(?,?)";
+            PreparedStatement pst = connectDB.prepareStatement(query);
+            pst.setString(1,kayttajaTunnusTextField.getText());
+            pst.setString(2,salasanaTextField.getText());
+            if (kelpaa() && salasanaTextField.getText().equals(salasanaUudelleenTextField.getText())) {
+                rekisterointiPonnahdusIkkuna.display("Nice","Käyttäjä luotu!");
+                pst.executeUpdate();
+                root = (Parent) FXMLLoader.load(this.getClass().getResource("resources/login.fxml"));
+                stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+                scene = new Scene(root);
+                stage.setScene(scene);
+                stage.show();
             }
-        else if (kayttajaTunnusTextField.getText().equals("")){
-            rekisterointiPonnahdusIkkuna.display("ERROR","Anna käyttäjätunnus");
-        }
-
-        else if(salasanaTextField.getText().equals("")) {
-            rekisterointiPonnahdusIkkuna.display("ERROR","Anna salasana");
-
-        }
-
-        else if(salasanaUudelleenTextField.getText().equals("")) {
-            rekisterointiPonnahdusIkkuna.display("ERROR","Anna salasana uudelleen");
-
-        }
-
-        else if(salasanaUudelleenTextField.getText().equals("") && salasanaTextField.getText().equals("")) {
-            rekisterointiPonnahdusIkkuna.display("ERROR","Anna salasana ja salasana uudelleen");
-
-        }
-
-        else if(kelpaa() == false) {
-            rekisterointiPonnahdusIkkuna.display("ERROR","Salasana ei ole kelvollinen, kokeile uudelleen.");
-
-        }
+            else {
+                rekisterointiPonnahdusIkkuna.display("ERROR","Salasana ei kelpaa, kokeile uudelleen.");
+            }
 
         } catch (SQLException throwables) {
             throwables.printStackTrace();
         }
     }
+
+
+
+
 
     public void switchToLogin(ActionEvent event) throws IOException {
         Stage stage;

@@ -1,9 +1,19 @@
 package sample;
+
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
+import sample.connectivity.connectionClass;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Palvelu {
+
 
     private SimpleIntegerProperty palvelu_id;
     private SimpleIntegerProperty toimintaalue_id;
@@ -12,11 +22,12 @@ public class Palvelu {
     private SimpleStringProperty kuvaus;
     private SimpleDoubleProperty hinta;
     private SimpleDoubleProperty alv;
+    private String maara;
 
     public Palvelu() {
     }
 
-    public Palvelu(int palvelu_id,int toimintaalue_id,String nimi, int tyyppi,String kuvaus, double hinta, double alv) {
+    public Palvelu(int palvelu_id, int toimintaalue_id, String nimi, int tyyppi, String kuvaus, double hinta, double alv) {
         this.setPalvelu_id(new SimpleIntegerProperty(palvelu_id));
         this.setToimintaalue_id(new SimpleIntegerProperty(toimintaalue_id));
         this.setNimi(new SimpleStringProperty(nimi));
@@ -24,7 +35,14 @@ public class Palvelu {
         this.setKuvaus(new SimpleStringProperty(kuvaus));
         this.setHinta(new SimpleDoubleProperty(hinta));
         this.setAlv(new SimpleDoubleProperty(alv));
+    }
 
+    public Palvelu(int palvelu_id, String nimi, double hinta, double alv, String maara) {
+        this.setPalvelu_id(new SimpleIntegerProperty(palvelu_id));
+        this.setNimi(new SimpleStringProperty(nimi));
+        this.setHinta(new SimpleDoubleProperty(hinta));
+        this.setAlv(new SimpleDoubleProperty(alv));
+        this.maara = maara;
     }
 
 
@@ -84,6 +102,12 @@ public class Palvelu {
         this.alv = alv;
     }
 
-    
+    public String getMaara() {
+        return maara;
+    }
+
+    public void setMaara(String maara) {
+        this.maara = maara;
+    }
 }
 

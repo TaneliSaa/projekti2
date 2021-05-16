@@ -114,7 +114,7 @@
                   <Font name="System Bold" size="18.0" />
                </font>
             </Label>
-            <ListView fx:id="taListView" layoutX="35.0" layoutY="456.0" prefHeight="293.0" prefWidth="182.0">
+            <ListView fx:id="taListView" layoutX="35.0" layoutY="456.0" prefHeight="247.0" prefWidth="182.0">
                <padding>
                   <Insets left="10.0" />
                </padding>
@@ -174,8 +174,8 @@
                   <Font size="14.0" />
                </font>
             </Button>
-            <Slider fx:id="minHinta" blockIncrement="25.0" layoutX="11.0" layoutY="266.0" max="400.0" prefHeight="14.0" prefWidth="197.0" showTickLabels="true" showTickMarks="true" />
-            <Slider fx:id="maxHinta" blockIncrement="25.0" layoutX="8.0" layoutY="324.0" max="400.0" prefHeight="38.0" prefWidth="195.0" showTickLabels="true" showTickMarks="true" value="400.0" />
+            <Slider fx:id="minHinta" blockIncrement="25.0" layoutX="11.0" layoutY="266.0" max="300.0" prefHeight="14.0" prefWidth="197.0" showTickLabels="true" showTickMarks="true" />
+            <Slider fx:id="maxHinta" blockIncrement="25.0" layoutX="8.0" layoutY="324.0" max="300.0" prefHeight="38.0" prefWidth="197.0" showTickLabels="true" showTickMarks="true" value="300.0" />
             <Label layoutX="15.0" layoutY="226.0" text="Hintahaarukka (€/vrk):">
                <font>
                   <Font size="14.0" />

@@ -1,13 +1,8 @@
 package sample;
 
-import com.itextpdf.text.*;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
-import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -19,25 +14,23 @@ import java.io.IOException;
 
 public class aktiivisetController {
 
-    String file_path="C:\\Users\\Tauno\\Desktop\\PDF\\";
+    String file_path="D:\\Opiskelu\\OTI\\pdf\\";
 
     @FXML
     public Label etunimiLabel, sukunimiLabel, lahiosoiteLabel, postinumeroLabel, laskuIDLabel,
             viitenumeroLabel, erapaivaLabel, paivamaaraLabel, summaLabel, alkuaikaLabel, loppuaikaLabel, varausLabel,
-    mokinNimiLabel;
+            mokinNimiLabel;
 
     @FXML
     public void luoPdf(ActionEvent event) {
 
         try {
-            String file_name = file_path + "lasku_" + laskuIDLabel.getText() + ".pdf";
+            String file_name = file_path + "lasku_" + paivamaaraLabel.getText() + "_id_" + laskuIDLabel.getText() + ".pdf";
             Document document = new Document();
 
             PdfWriter.getInstance(document, new FileOutputStream(file_name));
 
             document.open();
-
-
 
             Paragraph lasku = new Paragraph("LaskuID: " + laskuIDLabel.getText());
             document.add(lasku);
@@ -49,7 +42,7 @@ public class aktiivisetController {
             document.add(asiakas);
             document.add(new Paragraph(""));
 
-            Paragraph ajanjakso = new Paragraph("Ajanjakso: " + alkuaikaLabel.getText() + " - " + loppuaikaLabel.getText());
+            Paragraph ajanjakso = new Paragraph("Ajanjakso: " + alkuaikaLabel.getText() + "   --   " + loppuaikaLabel.getText());
             document.add(ajanjakso);
             document.add(new Paragraph(""));
 
@@ -62,8 +55,9 @@ public class aktiivisetController {
             document.add(tiedot2);
             document.add(new Paragraph(""));
 
+            document.close();
 
-
+            /*
             PdfPTable table = new PdfPTable(3);
             PdfPCell c1 = new PdfPCell(new Phrase("Heading 1"));
             table.addCell(c1);
@@ -80,15 +74,11 @@ public class aktiivisetController {
             table.addCell("2.1");
             table.addCell("2.2");
             table.addCell("2.3");
-
-
-            document.close();
-
+            */
 
         } catch (Exception e) {
             System.err.println(e);
         }
-
         closeStage(event);
     }
 
@@ -97,17 +87,12 @@ public class aktiivisetController {
     */
     @FXML
     public void switchToLaskutus(ActionEvent event) throws IOException {
-        Node source = (Node) event.getSource();
-        Stage stage = (Stage) source.getScene().getWindow();
-        stage.close();
+        closeStage(event);
     }
 
     private void closeStage(ActionEvent event) {
         Node source = (Node) event.getSource();
         Stage stage = (Stage) source.getScene().getWindow();
         stage.close();
-
     }
-
-
 }

@@ -14,7 +14,7 @@
         <PasswordField fx:id="passwordField" layoutX="134.0" layoutY="98.0" />
         <Label layoutX="53.0" layoutY="59.0" text="Username" />
         <Label layoutX="55.0" layoutY="102.0" text="Password" />
-      <Button layoutX="39.0" layoutY="183.0" mnemonicParsing="false" onAction="#switchToRekisterointi" text="Rekisteröidy" />
-      <RadioButton layoutX="59.0" layoutY="135.0" mnemonicParsing="false" onAction="#kirjautuu" text="Kirjautuminen" />
+        <Button layoutX="39.0" layoutY="183.0" mnemonicParsing="false" onAction="#switchToRekisterointi" text="Rekisteröidy" />
+        <RadioButton layoutX="59.0" layoutY="135.0" mnemonicParsing="false" onAction="#kirjautuu" text="Kirjautuminen" />
     </children>
 </Pane>

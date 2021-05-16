@@ -11,7 +11,7 @@ public class connectionClass {
 
         String dbName = "vn";
         String userName = "root";
-        String password = "root";
+        String password = "";
         String url = "jdbc:mysql://localhost/" + dbName;
 
         try {

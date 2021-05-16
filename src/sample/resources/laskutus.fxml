@@ -28,12 +28,12 @@
          </font>
       </Label>
       <TableView fx:id="tableView" layoutX="281.0" layoutY="152.0" prefHeight="374.0" prefWidth="521.0">
-        <columns>
-          <TableColumn fx:id="laskuIDColumn" prefWidth="110.0" text="lasku_id" />
-          <TableColumn fx:id="varausidColumn" prefWidth="110.0" text="varaus_id" />
+         <columns>
+            <TableColumn fx:id="laskuIDColumn" prefWidth="110.0" text="lasku_id" />
+            <TableColumn fx:id="varausidColumn" prefWidth="110.0" text="varaus_id" />
             <TableColumn fx:id="summaColumn" prefWidth="110.0" text="summa" />
             <TableColumn fx:id="alvColumn" prefWidth="110.0" text="alv" />
-        </columns>
+         </columns>
       </TableView>
       <Label layoutX="344.0" layoutY="549.0" text="Haku" />
       <TextField fx:id="hakuTextField" layoutX="389.0" layoutY="545.0" onAction="#haku" prefHeight="25.0" prefWidth="306.0" />

@@ -293,8 +293,28 @@ public class mokkienHallintaController implements Initializable {
 
             int delete_mokki_id = mokki.getMokki_id();
             String delete_mokki_nimi = mokki.getMokki_nimi();
+            boolean result = false;
 
-            vahvistusPoistolle(delete_mokki_id, delete_mokki_nimi);
+            String query = "SELECT * FROM varaus WHERE mokki_mokki_id = " + delete_mokki_id;
+
+            try {
+                PreparedStatement preparedStmt = connectDB.prepareStatement(query);
+                ResultSet queryResult = preparedStmt.executeQuery(query);
+                result = queryResult.next(); // True, jos query palauttaa rivin.
+                preparedStmt.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (!result) {
+                vahvistusPoistolle(delete_mokki_id, delete_mokki_nimi);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Huomautus");
+                alert.setHeaderText("Toiminto ei onnistunut!");
+                alert.setContentText("Mökkiä ei voi poistaa tietokannasta, koska siihen liittyy varauksia.");
+                alert.showAndWait();
+            }
         }
     }
 
@@ -341,7 +361,6 @@ public class mokkienHallintaController implements Initializable {
             String alue = result.get();
 
             try {
-
                 String check = "SELECT toimintaalue_id FROM toimintaalue WHERE nimi = '" + alue + "'";
                 boolean loytyyko;
 
@@ -378,6 +397,7 @@ public class mokkienHallintaController implements Initializable {
     public void poistaToimintaAlue(ActionEvent event) {
 
         ObservableList<String> valinnat = haeToimintaAlueet();
+        boolean tulos = false;
 
         ChoiceDialog<String> dialog = new ChoiceDialog<>("Valitse toiminta-alue", valinnat);
         dialog.getDialogPane().getButtonTypes().addAll(jatka, peruuta);
@@ -388,7 +408,39 @@ public class mokkienHallintaController implements Initializable {
         Optional<String> result = dialog.showAndWait();
         if (result.isPresent() && !result.get().equals("Valitse toiminta-alue")) {
             String delete_toimintaalue = result.get();
-            vahvistusPoistolle(-1, delete_toimintaalue);
+
+            String query = "SELECT p.palvelu_id FROM palvelu p INNER JOIN toimintaalue ta " +
+                    "ON p.toimintaalue_id = ta.toimintaalue_id WHERE ta.nimi = '" + delete_toimintaalue + "'";
+
+            String query2 = "SELECT m.mokki_id FROM mokki m INNER JOIN toimintaalue ta " +
+                    "ON m.toimintaalue_id = ta.toimintaalue_id WHERE ta.nimi = '" + delete_toimintaalue + "'";
+
+            try {
+                PreparedStatement preparedStmt = connectDB.prepareStatement(query);
+                ResultSet queryResult = preparedStmt.executeQuery(query);
+                tulos = queryResult.next(); // True, jos query palauttaa rivin.
+                preparedStmt.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            try {
+                PreparedStatement preparedStmt = connectDB.prepareStatement(query2);
+                ResultSet queryResult = preparedStmt.executeQuery(query2);
+                tulos = queryResult.next(); // True, jos query palauttaa rivin.
+                preparedStmt.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            if (!tulos) {
+                vahvistusPoistolle(-1, delete_toimintaalue);
+            } else {
+                Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                alert.setTitle("Huomautus");
+                alert.setHeaderText("Toiminto ei onnistunut!");
+                alert.setContentText("Toiminta-aluetta ei voi poistaa tietokannasta, koska siihen liittyy palveluita tai mökkejä.");
+                alert.showAndWait();
+            }
         }
     }
 

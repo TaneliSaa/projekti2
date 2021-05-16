@@ -1,28 +1,42 @@
 package sample;
 
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.control.DatePicker;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.control.cell.TextFieldTableCell;
 import javafx.stage.Stage;
 import sample.connectivity.connectionClass;
+
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 import java.util.ResourceBundle;
 
 
 public class varausDialogController implements Initializable {
 
+    @FXML
+    public TableColumn<Palvelu, String> palvekuNimiColumn, palveluLkmColumn;
+    @FXML
+    public TableColumn<Palvelu, Double> palvekuHintaColumn, palveluAlvColumn;
+
     private boolean lippu;
     private int asiakas_id;
     private int mokki_id;
     private int vahvistus;
+    private String toimintaalue;
+    ObservableList<Palvelu> palvelut = FXCollections.observableArrayList();
 
     // Alustetaan connectClass-luokan olio, jolla yhdistetään sovellus tietokantaan.
     private final connectionClass connectNow = new connectionClass();
@@ -32,6 +46,8 @@ public class varausDialogController implements Initializable {
     private DatePicker datePickerAlku, datePickerLoppu;
     @FXML
     private TextField tfNimi, tfVahvistus;
+    @FXML
+    private TableView<Palvelu> tableViewPalvelut;
     public paaNayttoController controller;
     public Label lblHallintaNotification, lblMokki, lblMokkiOsoite, lblHinta, lblOmistaja, lblAsiakasEmail, lblAsiakas,
             lblAsiakasPuhelin, lblValidateAsiakas, lblValidatePaivamaara, lblValidateVahvistus;
@@ -42,16 +58,56 @@ public class varausDialogController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
         datePickerAlku.setValue(LocalDate.now());
         datePickerLoppu.setValue(LocalDate.now());
         datePickerAlku.setShowWeekNumbers(false);
         datePickerLoppu.setShowWeekNumbers(false);
     }
 
+    public void setPalvelutLista() {
+
+        String query = "SELECT p.palvelu_id, p.nimi, p.hinta, p.alv FROM palvelu p INNER JOIN toimintaalue ta ON ta.toimintaalue_id = " +
+                "p.toimintaalue_id WHERE ta.nimi = '" + this.toimintaalue + "'";
+
+        try {
+            PreparedStatement preparedStmt = connectDB.prepareStatement(query);
+            ResultSet queryResult = preparedStmt.executeQuery(query);
+
+            while (queryResult.next()) {
+                int id = queryResult.getInt("p.palvelu_id");
+                String nimi = queryResult.getString("p.nimi");
+                double hinta = queryResult.getDouble("p.hinta");
+                double alv = queryResult.getDouble("p.alv");
+                String maara = "0";
+                palvelut.add(new Palvelu(id, nimi, hinta, alv, maara));
+            }
+
+            palvekuNimiColumn.setCellValueFactory(
+                    new PropertyValueFactory<Palvelu, String>("nimi"));
+            palvekuHintaColumn.setCellValueFactory(
+                    new PropertyValueFactory<Palvelu, Double>("hinta"));
+            palveluAlvColumn.setCellValueFactory(
+                    new PropertyValueFactory<Palvelu, Double>("alv"));
+            palveluLkmColumn.setCellValueFactory(
+                    new PropertyValueFactory<Palvelu, String>("maara"));
+            palveluLkmColumn.setCellFactory(TextFieldTableCell.forTableColumn());
+
+            tableViewPalvelut.setEditable(true);
+            tableViewPalvelut.setItems(palvelut);
+
+            preparedStmt.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
     public void setMokitObservableList(Mokki mokki) {
 
         String omistajaQuery = "SELECT etunimi, sukunimi FROM asiakas WHERE asiakas_id = " + mokki.getMokki_omistajaid();
 
+        this.toimintaalue = mokki.getToiminta_alue();
         this.mokki_id = mokki.getMokki_id();
         lblMokki.setText(mokki.getMokki_nimi() + " (Id: " + this.mokki_id + ")");
         lblMokkiOsoite.setText(mokki.getMokki_osoite() + ", " + mokki.getMokki_postinro());
@@ -69,6 +125,7 @@ public class varausDialogController implements Initializable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        setPalvelutLista();
     }
 
     @FXML
@@ -135,12 +192,33 @@ public class varausDialogController implements Initializable {
                         "VALUES (" + this.asiakas_id + ", " + this.mokki_id + ", CURDATE(), " + "DATE_SUB('" + alkupvm + "', INTERVAL " + this.vahvistus +
                         " DAY), '" + alkupvm + "', '" + loppupvm + "')";
 
-                System.out.println(insQuery);
                 PreparedStatement preparedStmt = connectDB.prepareStatement(insQuery);
 
                 // Suoritetaan tietokantaan lisäys.
-                int rowsUpdated = preparedStmt.executeUpdate();
-                if (rowsUpdated > 0) {
+                int rowsInserted = preparedStmt.executeUpdate();
+                if (rowsInserted > 0) {
+                    lisaaPalvelut();
+                }
+                preparedStmt.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            closeStage(event);
+        }
+    }
+
+    private void lisaaPalvelut() {
+
+        for (Palvelu palvelu : palvelut) {
+            try {
+                String insPalvelut = "INSERT INTO varauksen_palvelut (varaus_id, palvelu_id, lkm) VALUES (LAST_INSERT_ID(), ?, ?)";
+                PreparedStatement preparedStmt = connectDB.prepareStatement(insPalvelut);
+                preparedStmt.setInt(1, palvelu.getPalvelu_id());
+                preparedStmt.setInt(2, Integer.parseInt(palvelu.getMaara()));
+
+                int rowsInserted = preparedStmt.executeUpdate();
+                if (rowsInserted > 0) {
                     lblHallintaNotification.setText("Varaus tehtiin onnistuneesti!");
                     System.out.println("Varaus tehtiin onnistuneesti!");
                 }
@@ -148,7 +226,6 @@ public class varausDialogController implements Initializable {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            closeStage(event);
         }
     }
 
@@ -194,7 +271,7 @@ public class varausDialogController implements Initializable {
             try {
                 this.vahvistus = Integer.parseInt(tfVahvistus.getText().trim());
                 if (this.vahvistus < 0) {
-                    lblValidateVahvistus.setText("Vahvistus pvm täytyy olla positiivinen kokonaisluku tai nolla!");
+                    lblValidateVahvistus.setText("Tarkista vahvistuspvm!");
                     this.lippu = true;
                 }
             } catch (Exception ignored) {
@@ -206,7 +283,52 @@ public class varausDialogController implements Initializable {
 
     private void validatePaivamaarat() {
 
-        if ((datePickerAlku.getValue().compareTo(datePickerLoppu.getValue()) > 0)
+        int laskuri = 0;
+        List<LocalDate> alkupaivat = new ArrayList<>();
+        List<LocalDate> loppupaivat = new ArrayList<>();
+        Date alkupvm;
+        Date loppupvm;
+
+        String query = "SELECT varattu_alkupvm, varattu_loppupvm FROM varaus WHERE mokki_mokki_id = " + this.mokki_id;
+
+        try {
+            PreparedStatement preparedStmt = connectDB.prepareStatement(query);
+            ResultSet queryResult = preparedStmt.executeQuery(query);
+
+            while (queryResult.next()) {
+                alkupvm = queryResult.getTimestamp("varattu_alkupvm");
+                loppupvm = queryResult.getTimestamp("varattu_loppupvm");
+
+                LocalDate localAlku = alkupvm.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+                LocalDate localLoppu = loppupvm.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+
+                alkupaivat.add(localAlku);
+                loppupaivat.add(localLoppu);
+            }
+            preparedStmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        LocalDate start = datePickerAlku.getValue();
+        LocalDate end = datePickerLoppu.getValue();
+        List<LocalDate> totalDates = new ArrayList<>();
+        while (!start.isAfter(end)) {
+            totalDates.add(start);
+            start = start.plusDays(1);
+        }
+
+        for (LocalDate date : totalDates) {
+            if (alkupaivat.contains(date) || loppupaivat.contains(date)) {
+                laskuri++;
+                this.lippu = true;
+            }
+        }
+
+        if(laskuri > 0) {
+            lblValidatePaivamaara.setText("Annettuina päivämäärinä löytyy ja aiempi varaus!");
+            this.lippu = true;
+        } else if ((datePickerAlku.getValue().compareTo(datePickerLoppu.getValue()) > 0)
                 || (datePickerAlku.getValue().compareTo(LocalDate.now()) < 0)
                 || (datePickerLoppu.getValue().compareTo(LocalDate.now()) < 0)) {
             lblValidatePaivamaara.setText("Tarkista päivämäärät!");
@@ -214,5 +336,11 @@ public class varausDialogController implements Initializable {
         } else {
             lblValidatePaivamaara.setText("");
         }
+    }
+
+    public void onEditChanged(TableColumn.CellEditEvent<Palvelu, String> palveluStringCellEditEvent) {
+
+        Palvelu palvelu = tableViewPalvelut.getSelectionModel().getSelectedItem();
+        palvelu.setMaara(palveluStringCellEditEvent.getNewValue());
     }
 }

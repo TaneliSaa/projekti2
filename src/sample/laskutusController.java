@@ -211,22 +211,6 @@ public class laskutusController {
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     //Metodi, jolla pääsee takaisin päänäyttöön
     private Stage stage;
     private Scene scene;

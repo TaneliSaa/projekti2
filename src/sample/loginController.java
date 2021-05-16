@@ -52,7 +52,7 @@ public class loginController {
             if(!resultSet.next()) {
                 rekisterointiPonnahdusIkkuna.display("ERROR","Virheellinen käyttäjätunnus tai salasana. Kokeile uudelleen.");
 
-            //Ponnahdusikkuna, jos salasana menee oikein
+                //Ponnahdusikkuna, jos salasana menee oikein
             } else{
                 rekisterointiPonnahdusIkkuna.display("Nice","Kirjautuminen onnistui, tervetuloa!");
                 this.root = (Parent)FXMLLoader.load(this.getClass().getResource("resources/paaNaytto.fxml"));
@@ -68,8 +68,8 @@ public class loginController {
     }
 
     public void kirjautuu() {
-        usernameTextField.setText("Peruna5555");
-        passwordField.setText("PeRuNa555522");
+        usernameTextField.setText("Masa99");
+        passwordField.setText("Masa99Masa99");
     }
 
     //Rekisteröinti ikkunan vaihto metodi

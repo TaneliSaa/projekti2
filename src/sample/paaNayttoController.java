@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.Statement;
 import java.time.*;
 import java.util.*;
+
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -45,6 +46,8 @@ public class paaNayttoController implements Initializable {
     private ChoiceBox<String> taChoiceBox;
     @FXML
     private Slider minHinta, maxHinta;
+    @FXML
+    public ListView<String> taListView;
     @FXML
     public DatePicker datePicker;
     @FXML
@@ -91,6 +94,7 @@ public class paaNayttoController implements Initializable {
         if (mokkiTableView.getSelectionModel().getSelectedItem() != null) {
 
             Mokki mokki = mokkiTableView.getSelectionModel().getSelectedItem();
+            taListView.setItems(haePalvelut(mokki));
             int id = mokki.getMokki_id();
             List<LocalDate> alkupaivat = new ArrayList<>();
             List<LocalDate> loppupaivat = new ArrayList<>();
@@ -154,6 +158,33 @@ public class paaNayttoController implements Initializable {
         }
     }
 
+    public ObservableList<String> haePalvelut(Mokki mokki) {
+
+        ObservableList<String> palvelut = FXCollections.observableArrayList();
+
+        String query = "SELECT p.nimi, p.hinta, p.alv FROM palvelu p INNER JOIN toimintaalue ta ON ta.toimintaalue_id = " +
+                "p.toimintaalue_id WHERE ta.nimi = '" + mokki.getToiminta_alue() + "'";
+
+        try {
+            PreparedStatement preparedStmt = connectDB.prepareStatement(query);
+            ResultSet queryResult = preparedStmt.executeQuery(query);
+
+            while (queryResult.next()) {
+                String nimi = queryResult.getString("p.nimi");
+                Double hinta = queryResult.getDouble("p.hinta");
+                // Double alv = queryResult.getDouble("p.alv");
+
+                String palvelu = nimi + " (" +String.format("%.2f", hinta) + "/kpl)";
+
+                palvelut.add(palvelu);
+            }
+            preparedStmt.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return palvelut;
+    }
 
     @FXML
     public void teeVaraus() throws IOException {
@@ -166,7 +197,7 @@ public class paaNayttoController implements Initializable {
             varausController.setMokkiController(this);
             varausController.lblHallintaNotification = lblHallintaNotification;
             varausController.setMokitObservableList(mokki);
-            Scene scene = new Scene(parent, 560, 415);
+            Scene scene = new Scene(parent);
             Stage stage = new Stage();
             stage.setTitle("Mökin varaaminen");
             stage.initModality(Modality.APPLICATION_MODAL);
@@ -241,7 +272,7 @@ public class paaNayttoController implements Initializable {
             if (henkilomaara > 0) {
                 query += " AND m.henkilomaara >= " + henkilomaara;
             }
-            if (alaraja > 0 || ylaraja < 400) {
+            if (alaraja > 0 || ylaraja < 300) {
                 query += " AND m.vrk_hinta >= " + alaraja + " AND m.vrk_hinta <= " + ylaraja;
             }
         } else if (!alue.equals("Valitse toiminta-alue")) {
@@ -261,19 +292,19 @@ public class paaNayttoController implements Initializable {
             if (henkilomaara > 0) {
                 query += " AND m.henkilomaara >= " + henkilomaara;
             }
-            if (alaraja > 0 || ylaraja < 400) {
+            if (alaraja > 0 || ylaraja < 300) {
                 query += " AND m.vrk_hinta >= " + alaraja + " AND m.vrk_hinta <= " + ylaraja;
             }
         } else if (henkilomaara > 0) {
             query += "m.henkilomaara >= " + henkilomaara;
-            if (alaraja > 0 || ylaraja < 400) {
+            if (alaraja > 0 || ylaraja < 300) {
                 query += " AND m.vrk_hinta >= " + alaraja + " AND m.vrk_hinta <= " + ylaraja;
             }
-        } else if (alaraja > 0 || ylaraja < 400) {
+        } else if (alaraja > 0 || ylaraja < 300) {
             query += " m.vrk_hinta >= " + alaraja + " AND m.vrk_hinta <= " + ylaraja;
         }
 
-        if (id > 0 || !alue.equals("Valitse toiminta-alue") || !postinro.equals("") || henkilomaara > 0 || alaraja > 0 || ylaraja < 400) {
+        if (id > 0 || !alue.equals("Valitse toiminta-alue") || !postinro.equals("") || henkilomaara > 0 || alaraja > 0 || ylaraja < 300) {
             mokkiHaku(query);
             lblHallintaNotification.setText("Haku onnistui!");
         } else {
